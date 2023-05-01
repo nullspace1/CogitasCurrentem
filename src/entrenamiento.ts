@@ -1,101 +1,57 @@
-type Unidad = "Kilometro" | "Metro" | "Milla"
-type UnidadesEnMetro = Record<Unidad, number>
+import {Atleta} from './atleta'
+import { Duracion, Distancia, unidadesEnMetro } from './utils'
 
-const unidadesEnMetro : UnidadesEnMetro = {Kilometro:  1000,
-                                           Metro: 1,
-                                           Milla: 1609.34}
+type EstadoEntrenamiento = "Realizado" | "Ausente"
+class Entrenamiento {
 
+    private atleta : Atleta
+    private comentario : String
+    private fecha : Date[]
+    private intervalos : Intervalo[]
+    estado : EstadoEntrenamiento
 
-class Persona {
-    nombre : String
-    apellido : String
-    edad: number
+    constructor(intervalos : Intervalo[], comentario : String, estado : EstadoEntrenamiento){
+        this.intervalos = intervalos
+        this.comentario = comentario
+        this.estado = estado
+    }
 
-    constructor(nombre : String,apellido : String,edad : number){
-        this.nombre = nombre
-        this.apellido = apellido
-        this.edad = edad
+    public kilometrosTotales() : number{
+        var distanciaTotal = this.intervalos.map(intervalo => intervalo.distanciaRecorrida.enUnidad('Kilometro')).reduce((x,y) => x + y,0)
+        return distanciaTotal
+    }
+
+    public paceMaximo () : number{
+        return Math.max(...this.intervalos.map(int => int.pace()))
+    }
+
+    public pacePromedio() : number{
+        var paces = this.intervalos.map(intervalo => intervalo.pace())
+        return paces.reduce((x,y) => x + y,0) / paces.length
+    }
+
+    public tiempoTotalDeEntrenamiento() : Duracion {
+        return this.intervalos.map(intervalo => intervalo.tiempo).reduce((durA : Duracion,durB : Duracion) => durA.sumarA(durB))
     }
 }
 
 
 class Intervalo {
-    duracion : Duracion
-    distancia : Distancia
-    constructor(duracion : Duracion, distancia : Distancia){
-        this.duracion = duracion
-        this.distancia = distancia
+    distanciaRecorrida : Distancia
+    tiempo : Duracion
+    constructor(tiempo : Duracion, distanciaRecorrida : Distancia){
+        this.tiempo = tiempo
+        this.distanciaRecorrida = distanciaRecorrida
+    }
+
+    public pace(): number {
+        return this.tiempo.enMinutos() / this.distanciaRecorrida.enUnidad('Kilometro')
     }
 }
 
 
-class Duracion {
-    segundos : number
-    minutos : number
-    horas : number
+export { Entrenamiento,  Distancia, Atleta, Duracion, Intervalo }
 
-    constructor(segundos : number, minutos: number, horas: number){
-        this.segundos = segundos
-        this.minutos = minutos
-        this.horas = horas
-    }
-
-    enMinutos() : number{
-        return this.horas * 60 + this.minutos + this.segundos / 60
-    }
-
-    sumarA(otraDuracion : Duracion) : Duracion{
-        var segsTotales = this.segundos + otraDuracion.segundos
-        var minutosTotales = (segsTotales % 60) + this.minutos + otraDuracion.minutos
-        var horasTotales = (minutosTotales % 60) + this.horas + otraDuracion.horas
-        return new Duracion(segsTotales,minutosTotales,horasTotales)
-    }
-}
-
-class Distancia {
-    cantidad: number
-    unidad : Unidad
-
-    constructor(cantidad : number, unidad : Unidad){
-        this.cantidad = cantidad;
-        this.unidad = unidad;
-    }
-
-    metros() : number{
-        return unidadesEnMetro[this.unidad] * this.cantidad
-    }
-}
-
-class Entrenamiento {
-    persona : Persona
-    fechaEntrenamiento : Date
-    intervalos : Intervalo[]
-
-    constructor(persona : Persona, fechaEntrenamiento : Date, intervalos: Intervalo[]){
-        this.persona = persona
-        this.fechaEntrenamiento = fechaEntrenamiento
-        this.intervalos = intervalos
-    }
-
-    kilometrosTotales() : number{
-        var distanciaTotal = this.intervalos.map(intervalo => intervalo.distancia.metros()).reduce((x,y) => x + y,0)
-        return distanciaTotal / unidadesEnMetro.Kilometro
-    }
-
-    pacePromedio() : number{
-        var distanciaTotal = this.kilometrosTotales()
-        var tiempoTotalEnMinutos = this.calcularTiempoTotal().enMinutos()
-        return distanciaTotal / tiempoTotalEnMinutos
-    }
-
-    calcularTiempoTotal() : Duracion {
-        return this.intervalos.map(intervalo => intervalo.duracion).reduce((durA : Duracion,durB : Duracion) => durA.sumarA(durB))
-    }
-}
-
-
-
-export {Persona,Entrenamiento,Intervalo,Duracion,Distancia}
 
 
 
