@@ -1,37 +1,38 @@
 type Unidad = "Kilometro" | "Metro" | "Milla"
 type UnidadesEnMetro = Record<Unidad, number>
-
 const unidadesEnMetro : UnidadesEnMetro = {Kilometro:  1000,
                                            Metro: 1,
                                            Milla: 1609.34}
 
+class Tiempo {
 
-
-class Duracion {
-    private horas : number
-    private minutos : number
-    private segundos : number
+    horas : number
+    minutos : number
+    segundos : number
 
     constructor(segundos : number, minutos: number, horas: number){
-        this.segundos = segundos
-        this.minutos = minutos
-        this.horas = horas
+        this.segundos = segundos % 60
+        var minsTotales = ((segundos - (segundos % 60)) / 60 + minutos)
+        this.minutos = minsTotales % 60
+        this.horas = (minsTotales - (minsTotales % 60)) / 60 + horas
     }
 
     public enMinutos() : number{
         return this.horas * 60 + this.minutos + this.segundos / 60
     }
 
-    public sumarA(otraDuracion : Duracion) : Duracion{
-        var segs = this.segundos + otraDuracion.segundos
-        var segsTotales = segs % 60
-        var minutosResto = (segs - (segs % 60)) / 60
-        var minutos = minutosResto + this.minutos + otraDuracion.minutos
-        var minutosTotales = minutos % 60
-        var horasResto = (minutos - (minutos % 60)) / 60
-        var horasTotales = horasResto + otraDuracion.horas + this.horas
-        return new Duracion(segsTotales,minutosTotales,horasTotales)
+    public enSegundos() : number {
+        return this.horas * 60 * 60 + this.minutos * 60 + this.segundos
     }
+
+    public sumarA(otraTiempo : Tiempo) : Tiempo{
+        return new Tiempo(this.segundos + otraTiempo.segundos, this.minutos + otraTiempo.minutos, this.horas + otraTiempo.horas)
+    }
+
+    public dividir(valor : number) : Tiempo{
+        return new Tiempo(this.enSegundos()/valor,0,0)
+    }
+
 }
 
 class Distancia {
@@ -49,4 +50,6 @@ class Distancia {
 }
 
 
-export {Distancia,Duracion,Unidad,unidadesEnMetro}
+
+
+export {Distancia,Tiempo,Unidad,unidadesEnMetro}

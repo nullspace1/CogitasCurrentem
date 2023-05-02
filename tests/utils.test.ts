@@ -1,20 +1,20 @@
-import {Distancia,Atleta,Duracion,Intervalo,Entrenamiento} from "../src/entrenamiento";
+import {Distancia,Atleta,Tiempo,Entrenamiento} from "../src/entrenamiento";
 
-const duracionEnMinutosDataSet = [{duracion: new Duracion(10,0,0), minutos: 10/60},
-                                  {duracion: new Duracion(0,10,0), minutos: 10},
-                                  {duracion: new Duracion(0,0,2), minutos: 120},
-                                  {duracion: new Duracion(0,30,1), minutos: 90},
-                                {duracion: new Duracion(90,0,0), minutos: 1 + 1/2}]
+const TiempoEnMinutosDataSet = [{Tiempo: new Tiempo(10,0,0), minutos: 10/60},
+                                  {Tiempo: new Tiempo(0,10,0), minutos: 10},
+                                  {Tiempo: new Tiempo(0,0,2), minutos: 120},
+                                  {Tiempo: new Tiempo(0,30,1), minutos: 90},
+                                {Tiempo: new Tiempo(90,0,0), minutos: 1 + 1/2}]
 
-const sumarDuracionesDataSet = [{duracionA : new Duracion(10,0,0), duracionB : new Duracion(50,0,0), resultado: new Duracion(0,1,0)},
-                                {duracionA : new Duracion(0,10,0), duracionB : new Duracion(0,50,0), resultado: new Duracion(0,0,1)},
-                                {duracionA  : new Duracion(50,30,0), duracionB : new Duracion(0,40,0), resultado: new Duracion(50,10,1)}]
+const sumarTiempoesDataSet = [{TiempoA : new Tiempo(10,0,0), TiempoB : new Tiempo(50,0,0), resultado: new Tiempo(0,1,0)},
+                                {TiempoA : new Tiempo(0,10,0), TiempoB : new Tiempo(0,50,0), resultado: new Tiempo(0,0,1)},
+                                {TiempoA  : new Tiempo(50,30,0), TiempoB : new Tiempo(0,40,0), resultado: new Tiempo(50,10,1)}]
 
-describe('ClaseDuracion', () => {
-        test.each(duracionEnMinutosDataSet)('Duracion en minutos es correcta',
-         (datos) => expect(datos.duracion.enMinutos()).toBe(datos.minutos))
-        test.each(sumarDuracionesDataSet)('Sumar duraciones da correcto',
-        (datos) => expect(datos.duracionA.sumarA(datos.duracionB)).toStrictEqual(datos.resultado))
+describe('ClaseTiempo', () => {
+        test.each(TiempoEnMinutosDataSet)('Tiempo en minutos es correcta',
+         (datos) => expect(datos.Tiempo.enMinutos()).toBe(datos.minutos))
+        test.each(sumarTiempoesDataSet)('Sumar Tiempoes da correcto',
+        (datos) => expect(datos.TiempoA.sumarA(datos.TiempoB)).toStrictEqual(datos.resultado))
     })
 
 
