@@ -14,8 +14,6 @@ class Planificacion {
         return (this.mesociclos.length > 0) ? this.mesociclos[-1] : undefined
     }
 
-
-
     agregarMesociclo(mesociclo : MesoCiclo){
         this.mesociclos.push(mesociclo)
     }

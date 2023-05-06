@@ -1,5 +1,5 @@
-import { Sexo } from "../src/model/atleta";
-import { Atleta, Distancia, Entrenamiento, Lap, Resultado, Tiempo, TipoEntrenamiento } from "../src/model/entrenamiento";
+import { Sexo } from "../model/atleta";
+import { Atleta, Distancia, Entrenamiento, Lap, Resultado, Tiempo, TipoEntrenamiento } from "../model/entrenamiento";
 
 
 
