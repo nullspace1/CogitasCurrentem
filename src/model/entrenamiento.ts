@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import {Atleta} from './atleta'
 import { Tiempo, Distancia, mayorPace, Pace } from './utils'
 
 enum Resultado {
@@ -17,7 +16,7 @@ enum TipoEntrenamiento {
     SUBMAX
 }
 
-class Entrenamiento {
+class Entrenamiento{
 
     private comentario : String
     private fecha : Date
@@ -35,7 +34,7 @@ class Entrenamiento {
     }
 
     public distancia () : Distancia {
-        return this.laps.map((lap : Lap) => lap.distancia).reduce((x : Distancia,y : Distancia) => x + y,0)
+        return this.laps.map((lap : Lap) => lap.distancia).reduce((x : Distancia,y : Distancia) => x.valueOf() + y.valueOf(),0)
     }
 
     public paceMaximo () : Tiempo{
@@ -51,11 +50,11 @@ class Entrenamiento {
 
     public pacePromedio() : Pace{
         var paces = this.laps.map((lap : Lap) => lap.pace())
-        return paces.reduce((x : Pace,y : Pace) => x + y,0) / paces.length
+        return paces.reduce((x : Number,y : Number) => new Number(x.valueOf() + y.valueOf()),new Number(0)).valueOf() / paces.length
     }
 
     public tiempoTotalDeEntrenamiento() : Tiempo {
-        return this.laps.map((lap : Lap) => lap.tiempo).reduce((durA : Tiempo,durB : Tiempo) => durA + durB)
+        return this.laps.map((lap : Lap) => lap.tiempo).reduce((durA : Tiempo,durB : Tiempo) => durA.valueOf() + durB.valueOf())
     }
 
     public getResultadoEntrenamiento() : Resultado {
@@ -86,7 +85,7 @@ class Lap {
     }
 
     public pace(): Pace {
-       var tiempo = this.tiempo / this.distancia
+       var tiempo = this.tiempo.valueOf() / this.distancia.valueOf()
        return tiempo
     }
 
@@ -98,7 +97,7 @@ class Lap {
 
 
 
-export { Entrenamiento,  Distancia, Atleta, Tiempo, Lap  , Resultado , TipoEntrenamiento}
+export { Entrenamiento,   Lap  , Resultado , TipoEntrenamiento}
 
 
 

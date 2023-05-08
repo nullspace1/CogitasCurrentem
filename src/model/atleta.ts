@@ -1,6 +1,6 @@
-import { Tiempo, Entrenamiento, Resultado} from "./entrenamiento"
-import { Planificacion } from "./planificacion"
-import { Distancia, Pace} from "./utils"
+import {  Entrenamiento, Resultado} from "./entrenamiento"
+import { MesoCiclo } from "./planificacion"
+import { Distancia, Pace, Tiempo} from "./utils"
 
 
 enum Sexo {
@@ -8,22 +8,22 @@ enum Sexo {
     Mujer
 }
 
-class Atleta{
+class Atleta implements ListItem {
 
-    private alturaEnCm: number
+    private alturaEnCm: Number
     private fechaNacimiento : Date
     private nombre : String
-    private pesoEnKilos : number
+    private pesoEnKilos : Number
     private sexo : Sexo
-    private aniosEntrenamiento : number
-
+    private aniosEntrenamiento : Number
+    private objetivos: String
     private entrenamientosRealizados : Entrenamiento[]
-    private planificacion : Planificacion
+    private mesoCiclos : MesoCiclo[]
     private tests : Entrenamiento[]
     private ritmoMaximo : Tiempo
 
-    constructor(nombre : String,fechaNacimiento : Date, pesoEnKilos : number, alturaEnCm : number,
-                sexo : Sexo, aniosEntrenamiento : number){
+    constructor(nombre : string,fechaNacimiento : Date, pesoEnKilos : Number, alturaEnCm : Number,
+                sexo : Sexo, aniosEntrenamiento : Number, objetivos: String){
         this.nombre = nombre
         this.fechaNacimiento = fechaNacimiento
         this.alturaEnCm = alturaEnCm
@@ -31,9 +31,15 @@ class Atleta{
         this.tests = []
         this.entrenamientosRealizados = []
         this.aniosEntrenamiento = aniosEntrenamiento
-        this.planificacion = new Planificacion()
-        this.ritmoMaximo = 0
+        this.mesoCiclos = []
+        this.ritmoMaximo = -1
         this.pesoEnKilos = pesoEnKilos
+        this.objetivos = objetivos
+    }
+
+
+    getItemName(): String {
+        return this.nombre
     }
 
     public ausencias() : Entrenamiento[]{
@@ -45,7 +51,7 @@ class Atleta{
     }
 
     public distanciaSemanal(fecha : Date) : Distancia{
-        return this.entrenamientosEnSemanaDe(fecha).map((entrenamiento : Entrenamiento) => entrenamiento.distancia()).reduce((x,y) => x + y,0)
+        return this.entrenamientosEnSemanaDe(fecha).map((entrenamiento : Entrenamiento) => entrenamiento.distancia()).reduce((x,y) => x.valueOf() + y.valueOf(),0)
     }
 
     private entrenamientosEnSemanaDe(fecha: Date) {
@@ -61,8 +67,12 @@ class Atleta{
         this.ritmoMaximo = test.paceMaximo()
     }
 
-    public calcularRitmoAl(porcentaje : number) : Pace{
-        return  1/(this.ritmoMaximo * porcentaje)
+    public calcularRitmoAl(porcentaje : Number) : Pace{
+        return  1/(this.ritmoMaximo.valueOf() * porcentaje.valueOf())
+    }
+
+    public agregarMesociclo(mesociclo : MesoCiclo){
+        this.mesoCiclos.push(mesociclo)
     }
 
 }

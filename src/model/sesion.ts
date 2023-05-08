@@ -1,7 +1,8 @@
-import { Atleta,  Entrenamiento } from "./entrenamiento"
+import { Atleta } from "./atleta"
+import {   Entrenamiento } from "./entrenamiento"
 
 
-class Sesion {
+export class Sesione{
 
     private entrenamientos : Map<Atleta,Entrenamiento>
     private fechaEntrenamiento : Date
@@ -24,4 +25,3 @@ class Sesion {
 
 }
 
-export {Sesion}

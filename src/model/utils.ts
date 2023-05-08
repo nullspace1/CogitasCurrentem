@@ -10,10 +10,10 @@ const conversionASegundo = {
 }
 
 
-type Tiempo = number
-type Distancia = number
-type Pace = number
-type Velocidad = number
+type Tiempo = Number
+type Distancia = Number
+type Pace = Number
+type Velocidad = Number
 
 
 export function mayorPace(x : Pace, y : Pace){

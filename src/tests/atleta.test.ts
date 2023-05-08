@@ -1,5 +1,6 @@
-import { Sexo } from "../model/atleta";
-import { Atleta, Distancia, Entrenamiento, Lap, Resultado, Tiempo, TipoEntrenamiento } from "../model/entrenamiento";
+import { Atleta, Sexo } from "../model/atleta";
+import { Entrenamiento, Lap, Resultado, TipoEntrenamiento } from "../model/entrenamiento";
+import { Distancia, Tiempo } from "../model/utils";
 
 
 
@@ -14,7 +15,7 @@ function lap(metros : Distancia,segundos : Tiempo){
     return new Lap(segundos,metros)
 }
 
-const atleta : Atleta = new Atleta('',new Date('2002-08-01'),69,180,Sexo.Hombre,1,)
+const atleta : Atleta = new Atleta('',new Date('2002-08-01'),69,180,Sexo.Hombre,1,'')
 const laps = [lap(1000,60*2),lap(2000,30*4),lap(200,30)]
 const entrenamientos = [entr(laps,atleta,Resultado.Ausente,TipoEntrenamiento.SUBMAX, new Date('2023-4-15')),
                         entr([laps[0]],atleta,Resultado.Normal,TipoEntrenamiento.SubAerobico, new Date('2023-1-15')),

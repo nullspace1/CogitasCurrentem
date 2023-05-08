@@ -1,34 +1,8 @@
 import dayjs, { Dayjs } from "dayjs"
-import { Distancia, Tiempo, Entrenamiento } from "./entrenamiento"
+import {Entrenamiento } from "./entrenamiento"
 
 
-
-class Planificacion {
-    mesociclos : MesoCiclo[]
-
-    constructor(){
-        this.mesociclos = []
-    }
-
-    mesoCicloActual(date : Date) : MesoCiclo | undefined {
-        return (this.mesociclos.length > 0) ? this.mesociclos[-1] : undefined
-    }
-
-    agregarMesociclo(mesociclo : MesoCiclo){
-        this.mesociclos.push(mesociclo)
-    }
-
-    existeFechaEntre(fechaA : Date, fechaB : Date){
-        for (let i = 0; i < this.mesociclos.length; i ++){
-            if ((fechaA <= this.mesociclos[i].fechaFinalizacion && fechaA <= this.mesociclos[i].fechaComienzo) ||
-                (fechaB <= this.mesociclos[i].fechaFinalizacion && fechaB <= this.mesociclos[i].fechaComienzo))
-                return true
-        }
-    }
-
-}
-
-class MesoCiclo{
+export class MesoCiclo{
     fechaComienzo : Date
     fechaFinalizacion : Date
     microciclos : MicroCiclo[]
@@ -39,8 +13,9 @@ class MesoCiclo{
         this.microciclos = []
     }
 
-    distanciaTotal() : number {
-        return this.microciclos.map(s => s.distanciaTotal()).reduce((k1,k2) => k1+k2,0)
+
+    distanciaTotal() : Number {
+        return this.microciclos.map(s => s.distanciaTotal()).reduce((k1 : Number,k2 : Number) => new Number(k1.valueOf()+k2.valueOf()),0)
     }
 
     agregarMicrociclo(microciclo : MicroCiclo){
@@ -57,7 +32,7 @@ class MesoCiclo{
 
 }
 
-class MicroCiclo {
+export class MicroCiclo{
     fechaComienzo : Date
     fechaFinalizacion : Date
     dias : Entrenamiento[]
@@ -68,8 +43,8 @@ class MicroCiclo {
         this.dias = []
     }
 
-    distanciaTotal() : number {
-        return this.dias.map(e => e.distancia()).reduce((k1,k2) => k1 + k2,0)
+    distanciaTotal() : Number {
+        return this.dias.map(e => e.distancia()).reduce((k1,k2) => new Number(k1.valueOf() + k2.valueOf()),0)
     }
 
     agregarEntrenamiento(entrenamiento : Entrenamiento){
@@ -82,7 +57,3 @@ class MicroCiclo {
 
 
 
-
-
-
-export {Planificacion}
