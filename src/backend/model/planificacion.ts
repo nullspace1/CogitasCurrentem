@@ -1,4 +1,3 @@
-import dayjs, { Dayjs } from "dayjs"
 import {Entrenamiento } from "./entrenamiento"
 
 
@@ -30,6 +29,20 @@ export class MesoCiclo{
         }
     }
 
+    toObject(){
+        return {
+            fechaComienzo: JSON.stringify(this.fechaComienzo),
+            fechaFinalizacion: JSON.stringify(this.fechaFinalizacion),
+            microciclos: this.microciclos.map(m => m.toObject())
+        }
+    }
+
+    static fromObject(object: { fechaComienzo: string | number | Date; fechaFinalizacion: string | number | Date; microciclos: any[] }){
+        var mesociclo =  new MesoCiclo(new Date(object.fechaComienzo),new Date(object.fechaFinalizacion))
+        object.microciclos.forEach((m : any) => mesociclo.agregarMicrociclo(MicroCiclo.fromObject(m)))
+        return mesociclo
+    }
+
 }
 
 export class MicroCiclo{
@@ -51,6 +64,19 @@ export class MicroCiclo{
         this.dias.push(entrenamiento)
     }
 
+    toObject(){
+        return {
+            fechaComienzo : JSON.stringify(this.fechaComienzo),
+            fechaFinalizacion: JSON.stringify(this.fechaFinalizacion),
+            dias: this.dias.map(e => e.toObject())
+        }
+    }
+
+    static fromObject(object: { fechaComienzo: Date; fechaFinalizacion: Date; dias: any[] }){
+       var microciclo = new MicroCiclo(new Date(object.fechaComienzo),new Date(object.fechaFinalizacion))
+        object.dias.forEach((e : any)=> microciclo.agregarEntrenamiento(Entrenamiento.fromObject(e)))
+        return microciclo
+    }
 
 }
 

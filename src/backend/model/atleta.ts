@@ -4,26 +4,26 @@ import { Distancia, Pace, Tiempo} from "./utils"
 
 
 enum Sexo {
-    Hombre,
-    Mujer
+    Hombre = "Hombre",
+    Mujer ="Mujer"
 }
 
-class Atleta implements ListItem {
+class Atleta{
 
     private alturaEnCm: Number
     private fechaNacimiento : Date
-    private nombre : String
+    private nombre : string
     private pesoEnKilos : Number
     private sexo : Sexo
     private aniosEntrenamiento : Number
-    private objetivos: String
+    private objetivos: string
     private entrenamientosRealizados : Entrenamiento[]
     private mesoCiclos : MesoCiclo[]
     private tests : Entrenamiento[]
     private ritmoMaximo : Tiempo
 
     constructor(nombre : string,fechaNacimiento : Date, pesoEnKilos : Number, alturaEnCm : Number,
-                sexo : Sexo, aniosEntrenamiento : Number, objetivos: String){
+                sexo : Sexo, aniosEntrenamiento : Number, objetivos: string){
         this.nombre = nombre
         this.fechaNacimiento = fechaNacimiento
         this.alturaEnCm = alturaEnCm
@@ -36,12 +36,6 @@ class Atleta implements ListItem {
         this.pesoEnKilos = pesoEnKilos
         this.objetivos = objetivos
     }
-
-
-    getItemName(): String {
-        return this.nombre
-    }
-
     public ausencias() : Entrenamiento[]{
         return this.entrenamientosRealizados.filter(entrenamiento => entrenamiento.getResultadoEntrenamiento() == Resultado.Ausente)
     }
@@ -73,6 +67,29 @@ class Atleta implements ListItem {
 
     public agregarMesociclo(mesociclo : MesoCiclo){
         this.mesoCiclos.push(mesociclo)
+    }
+
+    toObject(){
+        return {
+            alturaEnCm: this.alturaEnCm,
+            fechaDeNacimiento: JSON.stringify,
+            nombre: this.nombre,
+            pesoEnKilos: this.pesoEnKilos,
+            sexo: this.sexo.toString(),
+            aniosEntrenamiento: this.aniosEntrenamiento,
+            objetivos: this.objetivos,
+            entrenamientosRealizados: this.entrenamientosRealizados.map(e => e.toObject()),
+            mesociclos: this.mesoCiclos.map(m => m.toObject()),
+            tests: this.tests.map(t => t.toObject()),
+            ritmomaximo: this.ritmoMaximo
+        }
+    }
+
+    static fromObject(object: { nombre: string; fechaNacimiento: string | number | Date; pesoEnKilos: Number; alturaEnCm: Number; sexo: Sexo; aniosEntrenamiento: Number; objetivos: string; tests: { foreach: (arg0: (t: any) => void) => void }; entrenamientosRealizados: any[]; mesoCiclos: any[] }){
+        var atleta = new Atleta(object.nombre,new Date(object.fechaNacimiento),object.pesoEnKilos,object.alturaEnCm,object.sexo as Sexo,object.aniosEntrenamiento, object.objetivos)
+        object.tests.foreach((t : any) => atleta.registrarTest(Entrenamiento.fromObject(t)))
+        object.entrenamientosRealizados.forEach((e : any) => atleta.registrarEntrenamiento(Entrenamiento.fromObject(e)))
+        object.mesoCiclos.forEach((m : any) => atleta.agregarMesociclo(MesoCiclo.fromObject(m)))
     }
 
 }

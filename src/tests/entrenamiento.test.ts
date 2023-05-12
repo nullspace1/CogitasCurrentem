@@ -1,6 +1,6 @@
-import { Sexo } from "../model/atleta";
-import { Entrenamiento, Lap, Resultado, TipoEntrenamiento} from "../model/entrenamiento";
-import { Distancia } from "../model/utils";
+import { Sexo } from "../backend/model/atleta";
+import { Entrenamiento, Lap, Resultado, TipoEntrenamiento} from "../backend/model/entrenamiento";
+import { Distancia } from "../backend/model/utils";
 
 function lap(metros : number,segundos : number){
     return new Lap(segundos,metros)

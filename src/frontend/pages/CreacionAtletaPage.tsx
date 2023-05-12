@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { Atleta, Sexo } from '../model/atleta';
+import { Atleta, Sexo } from '../../backend/model/atleta';
+import { SchemaNames, persist } from '../../backend/persistence/db';
 
 interface FormData {
   nombre: string;
@@ -12,7 +13,8 @@ interface FormData {
 }
 
 function createAtleta(data : FormData){
- // todo
+ var atleta = new Atleta(data.nombre,new Date(data.fechaNacimiento),data.pesoEnKilos,data.alturaEnCm,data.sexo,data.aniosEntrenamiento,data.objetivos)
+ persist(SchemaNames.atletas,atleta)
 }
 
 export const CreacionAtletaPage: React.FC = () => {

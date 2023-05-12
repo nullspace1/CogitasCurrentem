@@ -1,6 +1,6 @@
-import { Atleta, Sexo } from "../model/atleta";
-import { Entrenamiento, Lap, Resultado, TipoEntrenamiento } from "../model/entrenamiento";
-import { Distancia, Tiempo } from "../model/utils";
+import { Atleta, Sexo } from "../backend/model/atleta";
+import { Entrenamiento, Lap, Resultado, TipoEntrenamiento } from "../backend/model/entrenamiento";
+import { Distancia, Tiempo } from "../backend/model/utils";
 
 
 

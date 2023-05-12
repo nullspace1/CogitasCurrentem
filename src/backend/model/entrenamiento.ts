@@ -1,19 +1,19 @@
 import dayjs from 'dayjs'
 import { Tiempo, Distancia, mayorPace, Pace } from './utils'
 
-enum Resultado {
-    Ausente,
-    Planificacion,
-    Realizado,
-    Normal
+ enum Resultado {
+    Ausente = "Ausente",
+    Planificacion = "Planificacion",
+    Realizado = "Realizado",
+    Normal = "Normal"
 }
 
 enum TipoEntrenamiento {
-    Aerobico,
-    SubAerobico,
-    SuperAerobico,
-    VO2MAX,
-    SUBMAX
+    Aerobico = "Aerobico",
+    SubAerobico = "SubAerobico ",
+    SuperAerobico = "SuperAerobico",
+    VO2MAX = "VO2MAX",
+    SUBMAX = "SUBMAX"
 }
 
 class Entrenamiento{
@@ -32,7 +32,6 @@ class Entrenamiento{
         this.tipoEntrenamiento = tipoEntrenamiento
         this.fecha = fecha
     }
-
     public distancia () : Distancia {
         return this.laps.map((lap : Lap) => lap.distancia).reduce((x : Distancia,y : Distancia) => x.valueOf() + y.valueOf(),0)
     }
@@ -69,6 +68,20 @@ class Entrenamiento{
         return dayjs(this.fecha).isSame(fecha,'week')
     }
 
+    toObject(){
+        return {
+            comentario: this.comentario,
+            fecha: JSON.stringify(this.fecha),
+            resultado: this.resultado.toString(),
+            laps: this.laps.map(x => x.toObject()),
+            tipoEntrenamiento: this.tipoEntrenamiento.toString()
+        }
+    }
+
+    static fromObject(object: { comentario: String; resultado: Resultado; laps: { tiempo: Number; distanciaRecorrida: Number }[]; tipoEntrenamiento: TipoEntrenamiento; fecha: string | number | Date }){
+        return new Entrenamiento(object.comentario,object.resultado as Resultado,object.laps.map((l: { tiempo: Number; distanciaRecorrida: Number }) => Lap.fromObject(l)),object.tipoEntrenamiento as TipoEntrenamiento, new Date(object.fecha))
+    }
+
 }
 
 
@@ -87,6 +100,14 @@ class Lap {
     public pace(): Pace {
        var tiempo = this.tiempo.valueOf() / this.distancia.valueOf()
        return tiempo
+    }
+
+    toObject() {
+        return {distancia: this.distancia, tiempo: this.tiempo}
+    }
+
+    static fromObject(object: { tiempo: Number; distanciaRecorrida: Number }){
+        return new Lap(object.tiempo,object.distanciaRecorrida)
     }
 
 }

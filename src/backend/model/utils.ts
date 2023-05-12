@@ -20,4 +20,4 @@ export function mayorPace(x : Pace, y : Pace){
     return x < y ? x : y
 }
 
-export {Distancia,Tiempo, Pace,Velocidad}
+export type {Distancia,Tiempo, Pace,Velocidad}

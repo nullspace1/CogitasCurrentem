@@ -2,7 +2,7 @@ import { Atleta } from "./atleta"
 import {   Entrenamiento } from "./entrenamiento"
 
 
-export class Sesione{
+export class Sesion{
 
     private entrenamientos : Map<Atleta,Entrenamiento>
     private fechaEntrenamiento : Date
