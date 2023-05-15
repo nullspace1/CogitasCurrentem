@@ -13,7 +13,9 @@
     "dayjs": "^1.11.7",
     "electron-store": "^8.1.0",
     "react": "^18.2.0",
+    "react-app-rewired": "^2.2.1",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
     "tsc": "^2.0.4",
     "typescript": "^5.0.4",
@@ -21,7 +23,7 @@
   },
   "main": "compiled/electron.js",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-app-rewired start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "postinstall": "electron-builder install-app-deps",

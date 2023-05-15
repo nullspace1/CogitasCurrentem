@@ -18,7 +18,11 @@ export default class Main {
     }
 
     private static onReady() {
-        Main.mainWindow = new Main.BrowserWindow({ width: 800, height: 600 });
+        Main.mainWindow = new Main.BrowserWindow({ width: 800, height: 600 , webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: true,
+          }});
         Main.mainWindow
             .loadURL('http://localhost:3000/');
         Main.mainWindow.on('closed', Main.onClose);
@@ -30,8 +34,9 @@ export default class Main {
         Main.application.on('window-all-closed', Main.onWindowAllClosed);
         Main.application.on('ready', Main.onReady);
         var store = new Store();
-        ipcMain.on('asynchronous-message', (event, arg) => {
+        ipcMain.on('set-data', (event, arg) => {
             store.set('test', arg);
         })
+        ipcMain.on('get-data', (event, arg) => {return store.get('test')})
     }
 }

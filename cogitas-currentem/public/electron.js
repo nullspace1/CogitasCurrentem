@@ -1,5 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const electron_1 = require("electron");
+const electron_store_1 = __importDefault(require("electron-store"));
 class Main {
     static mainWindow;
     static application;
@@ -14,20 +19,25 @@ class Main {
         Main.mainWindow = null;
     }
     static onReady() {
-        Main.mainWindow = new Main.BrowserWindow({ width: 800, height: 600 });
+        Main.mainWindow = new Main.BrowserWindow({ width: 800, height: 600, webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+                enableRemoteModule: true,
+            } });
         Main.mainWindow
             .loadURL('http://localhost:3000/');
         Main.mainWindow.on('closed', Main.onClose);
     }
     static main(app, browserWindow) {
-        // we pass the Electron.App object and the
-        // Electron.BrowserWindow into this function
-        // so this class has no dependencies. This
-        // makes the code easier to write tests for
         Main.BrowserWindow = browserWindow;
         Main.application = app;
         Main.application.on('window-all-closed', Main.onWindowAllClosed);
         Main.application.on('ready', Main.onReady);
+        var store = new electron_store_1.default();
+        electron_1.ipcMain.on('set-data', (event, arg) => {
+            store.set('test', arg);
+        });
+        electron_1.ipcMain.on('get-data', (event, arg) => { return store.get('test'); });
     }
 }
 exports.default = Main;
