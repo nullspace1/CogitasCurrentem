@@ -2,6 +2,8 @@ import { Schema } from "electron-store";
 import { Entrenamiento, Resultado, TipoEntrenamiento } from "../model/entrenamiento";
 import { LapSchema } from "./lap_schema";
 
+
+
 const EntrenamientoSchema: Schema<{entrenamientos: Entrenamiento[]}> = {
     entrenamientos: {
         type:  'array',
@@ -20,5 +22,7 @@ const EntrenamientoSchema: Schema<{entrenamientos: Entrenamiento[]}> = {
         }
     }
 }
+
+
 
 export {EntrenamientoSchema}

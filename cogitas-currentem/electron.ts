@@ -1,5 +1,8 @@
 import { BrowserWindow, ipcMain } from 'electron';
-import Store, { Schema } from 'electron-store';
+import ElectronStore from 'electron-store';
+import path from 'path'
+import { AppSchemas, schemas } from './src/electron/persistence/db';
+import { AtletaDB, AtletaSchema } from './src/electron/persistence/atleta_schema';
 
 export default class Main {
     static mainWindow: Electron.BrowserWindow;
@@ -20,8 +23,9 @@ export default class Main {
     private static onReady() {
         Main.mainWindow = new Main.BrowserWindow({ width: 800, height: 600 , webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false,
+            contextIsolation: true,
             enableRemoteModule: true,
+            preload: path.join(__dirname, 'preload.js')
           }});
         Main.mainWindow
             .loadURL('http://localhost:3000/');
@@ -33,10 +37,19 @@ export default class Main {
         Main.application = app;
         Main.application.on('window-all-closed', Main.onWindowAllClosed);
         Main.application.on('ready', Main.onReady);
-        var store = new Store();
-        ipcMain.on('set-data', (event, arg) => {
-            store.set('test', arg);
+
+        const store = new ElectronStore<{atletas: any}>({
+            schema: AtletaSchema,
+        });
+
+        store.set('atletas',[])
+
+        ipcMain.handle('get-atletas', (event, arg) => {
+            return store.get('atletas')
         })
-        ipcMain.on('get-data', (event, arg) => {return store.get('test')})
+
+        ipcMain.handle('set-atletas', (event,arg) => {
+            store.set('atletas',arg)
+        } )
     }
 }

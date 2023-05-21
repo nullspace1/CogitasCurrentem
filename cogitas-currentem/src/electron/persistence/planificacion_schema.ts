@@ -1,7 +1,5 @@
 import { Schema } from "electron-store"
-import { Entrenamiento, Resultado, TipoEntrenamiento } from "../model/entrenamiento"
 import { MesoCiclo, MicroCiclo } from "../model/planificacion"
-import { LapSchema } from "./lap_schema"
 import { EntrenamientoSchema } from "./entrenamiento_schema"
 
 const MicroCicloSchema : Schema<{microciclos: MicroCiclo[]}>= {

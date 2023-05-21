@@ -1,4 +1,4 @@
-import dayjs = require('dayjs')
+import dayjs from 'dayjs'
 import { Tiempo, Distancia, mayorPace, Pace } from './utils'
 
  enum Resultado {

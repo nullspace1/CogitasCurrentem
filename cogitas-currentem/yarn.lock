@@ -1230,6 +1230,10 @@
   optionalDependencies:
     global-agent "^3.0.0"
 
+"@electron/remote@electron/remote":
+  version "0.0.0-development"
+  resolved "https://codeload.github.com/electron/remote/tar.gz/a6c1cc2135091d72c36b206456243f0c1beaafa2"
+
 "@electron/universal@1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@electron/universal/-/universal-1.2.1.tgz#3c2c4ff37063a4e9ab1e6ff57db0bc619bc82339"
