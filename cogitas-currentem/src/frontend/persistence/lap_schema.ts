@@ -1,5 +1,5 @@
 import { Schema } from "electron-store";
-import { Lap } from "../model/entrenamiento";
+import { Lap } from "../../electron/model/entrenamiento";
 
 const LapSchema: Schema<{ laps: Lap[] }> = {
     laps: {

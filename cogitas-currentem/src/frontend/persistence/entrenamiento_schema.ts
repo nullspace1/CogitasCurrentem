@@ -1,5 +1,5 @@
 import { Schema } from "electron-store";
-import { Entrenamiento, Resultado, TipoEntrenamiento } from "../model/entrenamiento";
+import { Entrenamiento, Resultado, TipoEntrenamiento } from "../../electron/model/entrenamiento";
 import { LapSchema } from "./lap_schema";
 
 

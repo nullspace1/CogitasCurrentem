@@ -27,7 +27,7 @@ exports.AtletaPag = exports.AtletasCrear = exports.Atletas = void 0;
 const react_1 = __importStar(require("react"));
 const atleta_1 = require("../electron/model/atleta");
 const react_router_dom_1 = require("react-router-dom");
-const atleta_schema_1 = require("../electron/persistence/atleta_schema");
+const atleta_schema_1 = require("./persistence/atleta_schema");
 const Atletas = () => {
     const [atletas, setAtletas] = (0, react_1.useState)([]);
     const [atletasFiltrados, setAtletasFiltrados] = (0, react_1.useState)([]);
@@ -53,7 +53,7 @@ const Atletas = () => {
     const borrarAtleta = async (atleta) => {
         const newAtletas = await new atleta_schema_1.AtletaDB().delete(atleta);
         setAtletas(newAtletas);
-        setAtletasFiltrados(atletas);
+        setAtletasFiltrados(newAtletas);
     };
     return (react_1.default.createElement("div", { className: "Page" },
         react_1.default.createElement("h1", { className: "Title" }, " Listado de Atletas"),
@@ -78,6 +78,7 @@ const AtletasCrear = () => {
         pesoEnKilos: 0,
         objetivos: ""
     });
+    const [date, dateSet] = (0, react_1.useState)("");
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
@@ -87,6 +88,7 @@ const AtletasCrear = () => {
     const crearAtleta = async () => {
         var atleta = new atleta_1.Atleta(atletaData.nombre, new Date(atletaData.fechaNacimiento), atletaData.pesoEnKilos, atletaData.alturaEnCm, atletaData.sexo, atletaData.aniosEntrenamiento, atletaData.objetivos);
         new atleta_schema_1.AtletaDB().add(atleta);
+        dateSet(atletaData.fechaNacimiento);
     };
     return (react_1.default.createElement("div", null,
         react_1.default.createElement("h1", null, "Crear Atleta"),
@@ -118,7 +120,7 @@ const AtletaPag = () => {
     (0, react_1.useLayoutEffect)(() => {
         const fetch = async () => {
             const atletas = await new atleta_schema_1.AtletaDB().getAll();
-            const atleta = atletas.filter(x => x.getId() !== id)[0];
+            const atleta = atletas.filter(x => x.getId() == id)[0];
             setAtletaInfo(atleta);
         };
         fetch();
@@ -129,13 +131,59 @@ const AtletaPag = () => {
         react_1.default.createElement("h1", null,
             atletaInfo.getNombre(),
             " "),
-        react_1.default.createElement("div", { className: "infopersonal" },
+        react_1.default.createElement("div", { className: "button" },
+            " ",
+            react_1.default.createElement(react_router_dom_1.Link, { to: '/editar' }, " Editar Informacion "),
+            " "),
+        react_1.default.createElement("div", { className: "infoBox" },
             react_1.default.createElement("h2", null, "Informacion Personal"),
             react_1.default.createElement("ul", null,
                 react_1.default.createElement("li", null,
                     "Edad:   ",
                     atletaInfo.getEdad(),
-                    " ")))));
+                    " "),
+                react_1.default.createElement("li", null,
+                    "Peso: ",
+                    atletaInfo.getPeso(),
+                    " kg"),
+                react_1.default.createElement("li", null,
+                    "Altura: ",
+                    atletaInfo.getAltura(),
+                    " cm"),
+                react_1.default.createElement("li", null,
+                    "Sexo: ",
+                    atletaInfo.getSexo())),
+            react_1.default.createElement("div", { className: "infoBox" },
+                react_1.default.createElement("h2", null, "Informacion Atletismo"),
+                react_1.default.createElement("ul", null,
+                    react_1.default.createElement("li", null,
+                        "A\u00F1os de entrenamiento: ",
+                        atletaInfo.getAniosEntrenamiento()),
+                    react_1.default.createElement("li", null,
+                        "Objetivo Actual: ",
+                        atletaInfo.getObjetivo()),
+                    react_1.default.createElement("li", null,
+                        "Kilometros Semanales: ",
+                        atletaInfo.distanciaSemanal(new Date()) / 1000,
+                        " km"),
+                    react_1.default.createElement("li", null,
+                        "Ritmo Maximo: ",
+                        atletaInfo.calcularRitmoAl(1),
+                        " "))),
+            react_1.default.createElement("h2", null, "Entrenamientos Realizados"),
+            react_1.default.createElement("div", { className: "infoBox" },
+                react_1.default.createElement("div", { className: "infoBoxHeader" },
+                    react_1.default.createElement(react_router_dom_1.Link, { to: '/entrenamientos/nuevo' }, " Agregar "),
+                    react_1.default.createElement(react_router_dom_1.Link, { to: '/entrenamientos' }, " Ver Todos ")),
+                react_1.default.createElement("ul", null, atletaInfo.getEntrenamientos().map(e => react_1.default.createElement("li", null,
+                    react_1.default.createElement("ul", null,
+                        react_1.default.createElement("li", null,
+                            "Fecha: ",
+                            e.getFecha().toDateString()),
+                        react_1.default.createElement("li", null,
+                            "Resultado: ",
+                            e.getResultadoEntrenamiento().toString())),
+                    react_1.default.createElement(react_router_dom_1.Link, { to: '/entrenamientos/' + e.getFecha().toDateString() }, "Ver"))))))));
 };
 exports.AtletaPag = AtletaPag;
 //# sourceMappingURL=AtletasPage.js.map

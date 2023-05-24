@@ -1,0 +1,1 @@
+{"version":3,"file":"lap_schema.js","sourceRoot":"","sources":["../../../../src/frontend/persistence/lap_schema.ts"],"names":[],"mappings":";;;AAGA,MAAM,SAAS,GAA4B;IACvC,IAAI,EAAE;QACJ,IAAI,EAAE,OAAO;QACb,KAAK,EAAE;YACL,IAAI,EAAE,QAAQ;YACd,UAAU,EAAE;gBACV,SAAS,EAAE,EAAE,IAAI,EAAE,QAAQ,EAAE;gBAC7B,MAAM,EAAE,EAAE,IAAI,EAAE,QAAQ,EAAE;aAC3B;SACF;KACF;CACF,CAAC;AAEM,8BAAS"}

@@ -4,11 +4,11 @@ const ipc = {
   'render': {
       // From render to main.
       'send': [
-          'setAtletas'
+          'setObjectList'
       ],
       // From main to render.
       'receive': [
-          'getAtletas'
+          'getObjectList'
       ]
   }
 };

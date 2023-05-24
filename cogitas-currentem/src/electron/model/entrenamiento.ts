@@ -49,7 +49,7 @@ class Entrenamiento{
 
     public pacePromedio() : Pace{
         var paces = this.laps.map((lap : Lap) => lap.pace())
-        return paces.reduce((x : Number,y : Number) => new Number(x.valueOf() + y.valueOf()),new Number(0)).valueOf() / paces.length
+        return paces.reduce((x : number,y : number) => x + y,0) / paces.length
     }
 
     public tiempoTotalDeEntrenamiento() : Tiempo {
@@ -58,6 +58,10 @@ class Entrenamiento{
 
     public getResultadoEntrenamiento() : Resultado {
         return this.resultado
+    }
+
+    public getFecha(){
+        return this.fecha
     }
 
     public paces() : Tiempo[]{
@@ -78,8 +82,8 @@ class Entrenamiento{
         }
     }
 
-    static fromObject(object: { comentario: String; resultado: Resultado; laps: { tiempo: Number; distanciaRecorrida: Number }[]; tipoEntrenamiento: TipoEntrenamiento; fecha: string | number | Date }){
-        return new Entrenamiento(object.comentario,object.resultado as Resultado,object.laps.map((l: { tiempo: Number; distanciaRecorrida: Number }) => Lap.fromObject(l)),object.tipoEntrenamiento as TipoEntrenamiento, new Date(object.fecha))
+    static fromObject(object: { comentario: String; resultado: Resultado; laps: { tiempo: number; distanciaRecorrida: number }[]; tipoEntrenamiento: TipoEntrenamiento; fecha: string | number | Date }){
+        return new Entrenamiento(object.comentario,object.resultado as Resultado,object.laps.map((l: { tiempo: number; distanciaRecorrida: number }) => Lap.fromObject(l)),object.tipoEntrenamiento as TipoEntrenamiento, new Date(object.fecha))
     }
 
 }
@@ -106,7 +110,7 @@ class Lap {
         return {distancia: this.distancia, tiempo: this.tiempo}
     }
 
-    static fromObject(object: { tiempo: Number; distanciaRecorrida: Number }){
+    static fromObject(object: { tiempo: number; distanciaRecorrida: number }){
         return new Lap(object.tiempo,object.distanciaRecorrida)
     }
 

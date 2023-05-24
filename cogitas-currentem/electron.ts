@@ -1,8 +1,8 @@
 import { BrowserWindow, ipcMain } from 'electron';
 import ElectronStore from 'electron-store';
 import path from 'path'
-import { AppSchemas, schemas } from './src/electron/persistence/db';
-import { AtletaDB, AtletaSchema } from './src/electron/persistence/atleta_schema';
+import {  AtletaSchema } from './src/frontend/persistence/atleta_schema';
+import { ExistingDatabase } from './src/frontend/persistence/persistence';
 
 export default class Main {
     static mainWindow: Electron.BrowserWindow;
@@ -37,19 +37,25 @@ export default class Main {
         Main.application = app;
         Main.application.on('window-all-closed', Main.onWindowAllClosed);
         Main.application.on('ready', Main.onReady);
-
-        const store = new ElectronStore<{atletas: any}>({
-            schema: AtletaSchema,
-        });
-
-        store.set('atletas',[])
-
-        ipcMain.handle('get-atletas', (event, arg) => {
-            return store.get('atletas')
-        })
-
-        ipcMain.handle('set-atletas', (event,arg) => {
-            store.set('atletas',arg)
-        } )
     }
+}
+
+
+
+function setStorageHandlers(){
+
+    const stores = {
+        'atleta' : new ElectronStore<{atletas: any}>({schema: AtletaSchema})
+    }
+
+    ipcMain.handle('getObjectList', (event, storeName : ExistingDatabase) => {
+        const usedStore = stores[storeName]
+        usedStore.get(storeName)
+    })
+
+    ipcMain.handle('setObjectList', (event,...args) => {
+        const [objectList, storeName] = args
+        const usedStore = stores[storeName]
+        usedStore.set(objectList)
+    } )
 }

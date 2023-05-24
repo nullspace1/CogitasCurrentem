@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AtletaSchema = exports.AtletaDB = void 0;
-const atleta_1 = require("../model/atleta");
+const atleta_1 = require("../../electron/model/atleta");
 const entrenamiento_schema_1 = require("./entrenamiento_schema");
 const planificacion_schema_1 = require("./planificacion_schema");
 const AtletaSchema = {

@@ -6,7 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const electron_store_1 = __importDefault(require("electron-store"));
 const path_1 = __importDefault(require("path"));
-const atleta_schema_1 = require("./src/electron/persistence/atleta_schema");
+const atleta_schema_1 = require("./src/frontend/persistence/atleta_schema");
+const atleta_1 = require("./src/electron/model/atleta");
+const entrenamiento_1 = require("./src/electron/model/entrenamiento");
 class Main {
     static mainWindow;
     static application;
@@ -39,7 +41,12 @@ class Main {
         const store = new electron_store_1.default({
             schema: atleta_schema_1.AtletaSchema,
         });
-        store.set('atletas', []);
+        const atleta = new atleta_1.Atleta("Lautaro Moyano", new Date("2002/01/08"), 63, 174, atleta_1.Sexo.Hombre, 1, "Correr");
+        const lap = new entrenamiento_1.Lap(20 * 60, 5);
+        const entrenamiento = new entrenamiento_1.Entrenamiento("Sin dolor", entrenamiento_1.Resultado.Realizado, [lap], entrenamiento_1.TipoEntrenamiento.SubAerobico, new Date());
+        atleta.agregarEntrenamiento(entrenamiento);
+        atleta.setFechaCreacion(new Date());
+        store.set('atletas', [atleta.toObject()]);
         electron_1.ipcMain.handle('get-atletas', (event, arg) => {
             return store.get('atletas');
         });

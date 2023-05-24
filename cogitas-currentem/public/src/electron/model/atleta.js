@@ -22,6 +22,7 @@ class Atleta {
     tests;
     ritmoMaximo;
     id;
+    fechaCreacion;
     constructor(nombre, fechaNacimiento, pesoEnKilos, alturaEnCm, sexo, aniosEntrenamiento, objetivos) {
         this.nombre = nombre;
         this.fechaNacimiento = fechaNacimiento;
@@ -63,19 +64,47 @@ class Atleta {
     getNombre() {
         return this.nombre;
     }
+    getPeso() {
+        return this.pesoEnKilos;
+    }
+    getAltura() {
+        return this.alturaEnCm;
+    }
     getId() {
         return this.id;
+    }
+    getSexo() {
+        return this.sexo;
+    }
+    getAniosEntrenamiento() {
+        return this.aniosEntrenamiento + this.getAniosEntrenando();
+    }
+    getAniosEntrenando() {
+        return new Date(Date.now() - this.fechaCreacion.valueOf()).getFullYear() - 1970;
     }
     setId(id) {
         this.id = (id !== -1) ? id : Math.random().toString(16).slice(2);
     }
+    getObjetivo() {
+        return this.objetivos;
+    }
     getEdad() {
-        return;
+        return new Date(Date.now() - this.fechaNacimiento.valueOf()).getFullYear() - 1970;
+    }
+    setFechaCreacion(fecha) {
+        this.fechaCreacion = fecha.valueOf() === 0 ? new Date() : fecha;
+    }
+    getEntrenamientos() {
+        return this.entrenamientosRealizados;
+    }
+    agregarEntrenamiento(entrenamiento) {
+        this.entrenamientosRealizados.push(entrenamiento);
     }
     toObject() {
+        console.log(this.fechaNacimiento);
         return {
             alturaEnCm: this.alturaEnCm,
-            fechaNacimiento: JSON.stringify(this.fechaNacimiento),
+            fechaNacimiento: this.fechaNacimiento.toDateString(),
             nombre: this.nombre,
             pesoEnKilos: this.pesoEnKilos,
             sexo: this.sexo.toString(),
@@ -85,7 +114,8 @@ class Atleta {
             mesoCiclos: this.mesoCiclos.map(m => m.toObject()),
             tests: this.tests.map(t => t.toObject()),
             ritmomaximo: this.ritmoMaximo,
-            id: this.id
+            id: this.id,
+            fechaCreacion: this.fechaCreacion.toDateString()
         };
     }
     static fromObject(object) {
@@ -94,6 +124,7 @@ class Atleta {
         object.entrenamientosRealizados.forEach((e) => atleta.registrarEntrenamiento(entrenamiento_1.Entrenamiento.fromObject(e)));
         object.mesoCiclos.forEach((m) => atleta.agregarMesociclo(planificacion_1.MesoCiclo.fromObject(m)));
         atleta.setId(object.id);
+        atleta.setFechaCreacion(new Date(object.fechaCreacion));
         return atleta;
     }
 }

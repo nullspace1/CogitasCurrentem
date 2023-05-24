@@ -51,13 +51,16 @@ class Entrenamiento {
     }
     pacePromedio() {
         var paces = this.laps.map((lap) => lap.pace());
-        return paces.reduce((x, y) => new Number(x.valueOf() + y.valueOf()), new Number(0)).valueOf() / paces.length;
+        return paces.reduce((x, y) => x + y, 0) / paces.length;
     }
     tiempoTotalDeEntrenamiento() {
         return this.laps.map((lap) => lap.tiempo).reduce((durA, durB) => durA.valueOf() + durB.valueOf());
     }
     getResultadoEntrenamiento() {
         return this.resultado;
+    }
+    getFecha() {
+        return this.fecha;
     }
     paces() {
         return this.laps.map(lap => lap.pace());

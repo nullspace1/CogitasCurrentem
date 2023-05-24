@@ -1,10 +1,12 @@
 import React from 'react';
 import {Routes, Route } from 'react-router-dom';
-import { AtletaPag, Atletas, AtletasCrear } from './frontend/AtletasPage';
+import { Atletas} from './frontend/Atletas/MainPage';
 import { Historial } from './frontend/HistorialPage';
 import { Planificacion } from './frontend/PlanificacionPage';
 import { Home } from './frontend/Home';
 import { Header } from './frontend/Components/External';
+import { AtletasCrear } from './frontend/Atletas/CrearAtleta';
+import { AtletaPag } from './frontend/Atletas/AtletaIndividual';
 
 
 
