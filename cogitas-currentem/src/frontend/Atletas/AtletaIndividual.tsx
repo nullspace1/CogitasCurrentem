@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Atleta } from "../../electron/model/atleta";
 import { DatabaseInterface, ExistingDatabase } from "../persistence/persistence";
 
+
 export const AtletaPag : React.FC<any> = () => {
     const { id } = useParams();
     const [atletaInfo, setAtletaInfo] = useState(null as Atleta)

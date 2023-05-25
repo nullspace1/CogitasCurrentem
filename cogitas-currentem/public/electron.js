@@ -7,8 +7,6 @@ const electron_1 = require("electron");
 const electron_store_1 = __importDefault(require("electron-store"));
 const path_1 = __importDefault(require("path"));
 const atleta_schema_1 = require("./src/frontend/persistence/atleta_schema");
-const atleta_1 = require("./src/electron/model/atleta");
-const entrenamiento_1 = require("./src/electron/model/entrenamiento");
 class Main {
     static mainWindow;
     static application;
@@ -38,22 +36,25 @@ class Main {
         Main.application = app;
         Main.application.on('window-all-closed', Main.onWindowAllClosed);
         Main.application.on('ready', Main.onReady);
-        const store = new electron_store_1.default({
-            schema: atleta_schema_1.AtletaSchema,
-        });
-        const atleta = new atleta_1.Atleta("Lautaro Moyano", new Date("2002/01/08"), 63, 174, atleta_1.Sexo.Hombre, 1, "Correr");
-        const lap = new entrenamiento_1.Lap(20 * 60, 5);
-        const entrenamiento = new entrenamiento_1.Entrenamiento("Sin dolor", entrenamiento_1.Resultado.Realizado, [lap], entrenamiento_1.TipoEntrenamiento.SubAerobico, new Date());
-        atleta.agregarEntrenamiento(entrenamiento);
-        atleta.setFechaCreacion(new Date());
-        store.set('atletas', [atleta.toObject()]);
-        electron_1.ipcMain.handle('get-atletas', (event, arg) => {
-            return store.get('atletas');
-        });
-        electron_1.ipcMain.handle('set-atletas', (event, arg) => {
-            store.set('atletas', arg);
-        });
+        setStorageHandlers();
     }
 }
 exports.default = Main;
+function setStorageHandlers() {
+    const stores = {
+        'atleta': new electron_store_1.default({ schema: atleta_schema_1.AtletaSchema, })
+    };
+    stores['atleta'].set('atleta', []);
+    electron_1.ipcMain.handle('getObjectList', (event, storeName) => {
+        const usedStore = stores[storeName];
+        var x = usedStore.get(storeName);
+        console.log(x);
+        return x;
+    });
+    electron_1.ipcMain.handle('setObjectList', (event, ...args) => {
+        const [objectList, storeName] = args;
+        const usedStore = stores[storeName];
+        usedStore.set(objectList);
+    });
+}
 //# sourceMappingURL=electron.js.map

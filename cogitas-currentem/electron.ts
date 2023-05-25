@@ -37,6 +37,7 @@ export default class Main {
         Main.application = app;
         Main.application.on('window-all-closed', Main.onWindowAllClosed);
         Main.application.on('ready', Main.onReady);
+        setStorageHandlers()
     }
 }
 
@@ -45,12 +46,15 @@ export default class Main {
 function setStorageHandlers(){
 
     const stores = {
-        'atleta' : new ElectronStore<{atletas: any}>({schema: AtletaSchema})
+        'atleta' : new ElectronStore<{atleta: any}>({schema: AtletaSchema,})
     }
+
+    stores['atleta'].set('atleta',[])
 
     ipcMain.handle('getObjectList', (event, storeName : ExistingDatabase) => {
         const usedStore = stores[storeName]
-        usedStore.get(storeName)
+        var x = usedStore.get(storeName)
+        return x
     })
 
     ipcMain.handle('setObjectList', (event,...args) => {

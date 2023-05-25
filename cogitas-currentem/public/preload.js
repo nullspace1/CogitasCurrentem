@@ -14,6 +14,7 @@ const ipc = {
 };
 
 contextBridge.exposeInMainWorld('electron', {
-  getAtletas: () => ipcRenderer.invoke('get-atletas'),
-  setAtletas: (atletasList) => {ipcRenderer.invoke('set-atletas', atletasList)},
+  setObjectList: (objects,string) => {ipcRenderer.invoke('setObjectList',objects,string)},
+  getObjectList: (string) =>
+    ipcRenderer.invoke('getObjectList',string),
 });

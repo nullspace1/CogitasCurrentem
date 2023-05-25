@@ -1,31 +1,7 @@
 
 import { Atleta } from "../../electron/model/atleta";
 import { Entrenamiento } from "../../electron/model/entrenamiento";
-
-export abstract class Persistable {
-
-    id : string
-    creationDate : Date
-
-
-    setDateOfCreation(){
-        this.creationDate = new Date()
-    }
-
-    setId(){
-        this.id = Math.random().toString(16).slice(2)
-    }
-
-    asObject(){
-        const object = this.toObject()
-        object.id = this.id
-        object.creationDate = this.creationDate.toDateString()
-        return object
-    }
-
-    abstract toObject()
-
-}
+import { Persistable } from "./persistable";
 
 export enum ExistingDatabase {
     'atleta',
@@ -40,18 +16,18 @@ const converters  = {
 declare global {
     interface Window {
       electron: {
-        getObjectList: (string : ExistingDatabase) => Object[];
-        setObjectList: (objectList : Object[], storeName : ExistingDatabase) => void;
+        getObjectList: (string : string) => Object[];
+        setObjectList: (objectList : Object[], storeName : string) => void;
       };
 }
 }
 
 export class DatabaseInterface{
 
-    databaseName : ExistingDatabase
+    databaseName : string
 
     constructor(databaseName : ExistingDatabase){
-        this.databaseName = databaseName
+        this.databaseName = ExistingDatabase[databaseName].toString()
     }
 
     async getAll() : Promise<Persistable[]>{

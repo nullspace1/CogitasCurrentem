@@ -7,10 +7,10 @@ import { MesoCicloSchema } from "./planificacion_schema";
 
 
 
-type AtletaSchema = {atletas : any}
+type AtletaSchema = {atleta : any}
 
 const AtletaSchema : Schema<AtletaSchema>= {
-    atletas: {
+    atleta: {
         type: 'array',
         items: {
             type: 'object',
