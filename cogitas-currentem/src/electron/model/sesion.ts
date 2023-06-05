@@ -1,3 +1,4 @@
+import { Type } from "class-transformer"
 import { Semana } from "../typeConfigs"
 import { Atleta } from "./atleta"
 import {   Entrenamiento } from "./entrenamiento"
@@ -5,14 +6,14 @@ import {   Entrenamiento } from "./entrenamiento"
 
 export class Sesion{
 
+    @Type(() => Map<Atleta,Entrenamiento>)
     private entrenamientos : Map<Atleta,Entrenamiento>
-    private lugar : String
-    private nombreEntrenamiento : String
+
+    private lugar : string
     private semana : Semana
 
-    constructor(nombreEntrenamiento : String,semana : Semana,
-       entrenamientos : Map<Atleta,Entrenamiento>, lugar : String){
-       this.nombreEntrenamiento = nombreEntrenamiento
+    constructor(semana : Semana,
+       entrenamientos : Map<Atleta,Entrenamiento>, lugar : string){
        this.semana = semana
        this.entrenamientos = entrenamientos
        this.lugar = lugar
@@ -22,6 +23,18 @@ export class Sesion{
         for (const [atleta,entrenamiento] of this.entrenamientos) {
             atleta.agregarEntrenamiento(entrenamiento)
         }
+    }
+
+    public getLugar() : string {
+        return this.lugar;
+    }
+
+    public getSemana() : Semana {
+        return this.semana
+    }
+
+    public getEntrenamientos() : Map<Atleta,Entrenamiento>{
+        return this.entrenamientos
     }
 
 }

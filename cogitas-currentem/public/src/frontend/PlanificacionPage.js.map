@@ -1,1 +1,1 @@
-{"version":3,"file":"PlanificacionPage.js","sourceRoot":"","sources":["../../../src/frontend/PlanificacionPage.tsx"],"names":[],"mappings":";;;;;;AAAA,kDAAyB;AAElB,MAAM,aAAa,GAAc,GAAG,EAAE;IACzC,OAAO,CACH,0CACM,CACT,CAAA;AACL,CAAC,CAAA;AALY,QAAA,aAAa,iBAKzB"}
+{"version":3,"file":"PlanificacionPage.js","sourceRoot":"","sources":["../../../src/frontend/PlanificacionPage.tsx"],"names":[],"mappings":";;;;;;AAAA,kDAAyB;AAElB,MAAM,aAAa,GAAa,GAAG,EAAE;IACxC,OAAO,CACH,0CACM,CACT,CAAA;AACL,CAAC,CAAA;AALY,QAAA,aAAa,iBAKzB"}

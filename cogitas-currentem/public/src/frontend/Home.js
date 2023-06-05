@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Home = void 0;
 const react_1 = __importDefault(require("react"));
 const Home = () => {
-    return (react_1.default.createElement("div", { className: "Page" },
+    return (react_1.default.createElement("div", null,
         react_1.default.createElement("h1", null, "Praecurre v0.1 Pre-Alpha")));
 };
 exports.Home = Home;

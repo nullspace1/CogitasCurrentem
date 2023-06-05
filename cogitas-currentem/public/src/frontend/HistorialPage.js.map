@@ -1,1 +1,1 @@
-{"version":3,"file":"HistorialPage.js","sourceRoot":"","sources":["../../../src/frontend/HistorialPage.tsx"],"names":[],"mappings":";;;;;;AAAA,kDAAyB;AAElB,MAAM,SAAS,GAAc,GAAG,EAAE;IACrC,OAAO,CACH,0CACM,CACT,CAAA;AACL,CAAC,CAAA;AALY,QAAA,SAAS,aAKrB"}
+{"version":3,"file":"HistorialPage.js","sourceRoot":"","sources":["../../../src/frontend/HistorialPage.tsx"],"names":[],"mappings":";;;;;;AAAA,kDAAyB;AAElB,MAAM,SAAS,GAAa,GAAG,EAAE;IACpC,OAAO,CACH,0CACM,CACT,CAAA;AACL,CAAC,CAAA;AALY,QAAA,SAAS,aAKrB"}

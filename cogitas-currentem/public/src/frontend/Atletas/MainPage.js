@@ -47,24 +47,24 @@ const Atletas = () => {
         if (e.target.value === 0)
             setAtletasFiltrados(atletas);
         else
-            setAtletasFiltrados(atletas.filter(a => a.nombre.toLowerCase().includes(e.target.value.toLowerCase())));
+            setAtletasFiltrados(atletas.filter(a => a.getNombre().toLowerCase().includes(e.target.value.toLowerCase())));
     };
     const borrarAtleta = async (atleta) => {
         const newAtletas = await new persistence_1.DatabaseInterface(persistence_1.ExistingDatabase.atleta).delete(atleta);
         setAtletas(newAtletas);
         setAtletasFiltrados(newAtletas);
     };
-    return (react_1.default.createElement("div", { className: "Page" },
-        react_1.default.createElement("h1", { className: "Title" }, " Listado de Atletas"),
+    return (react_1.default.createElement("div", null,
+        react_1.default.createElement("h1", null, " Listado de Atletas"),
         react_1.default.createElement("p", null, " Aca podes visualizar a todos los atletas cargados en el sistema."),
-        react_1.default.createElement("div", { className: "ListAtletas" },
-            react_1.default.createElement("div", { className: "ListAtletasHeader" },
+        react_1.default.createElement("div", null,
+            react_1.default.createElement("div", null,
                 react_1.default.createElement("input", { placeholder: "Buscar...", type: "Text", onChange: handleSearch, value: searchInput, defaultValue: "" }),
                 react_1.default.createElement(react_router_dom_1.Link, { to: "./nuevo" }, " Nuevo Atleta ")),
-            react_1.default.createElement("div", { className: "ListAtletas" },
+            react_1.default.createElement("div", null,
                 react_1.default.createElement("ul", null, atletasFiltrados.map((a, index) => react_1.default.createElement("li", { key: index },
-                    react_1.default.createElement("div", { className: "ListAtletasAtleta" }, a.nombre),
-                    react_1.default.createElement(react_router_dom_1.Link, { className: "ListAtletasLink", to: "./" + a.id }, " Ver "),
+                    react_1.default.createElement("div", null, a.getNombre()),
+                    react_1.default.createElement(react_router_dom_1.Link, { to: "./" + a.id }, " Ver "),
                     react_1.default.createElement("button", { onClick: () => borrarAtleta(a) }, "Eliminar"))))))));
 };
 exports.Atletas = Atletas;

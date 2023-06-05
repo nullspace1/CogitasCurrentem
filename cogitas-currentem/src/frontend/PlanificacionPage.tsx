@@ -1,6 +1,6 @@
 import React from "react"
 
-export const Planificacion : React.FC = () => {
+export const Planificacion: React.FC = () => {
     return (
         <div>
         </div>

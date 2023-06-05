@@ -1,104 +1,77 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TipoEntrenamiento = exports.Resultado = exports.Lap = exports.Entrenamiento = void 0;
-const dayjs_1 = __importDefault(require("dayjs"));
-const utils_1 = require("./utils");
-var Resultado;
-(function (Resultado) {
-    Resultado["Ausente"] = "Ausente";
-    Resultado["Planificacion"] = "Planificacion";
-    Resultado["Realizado"] = "Realizado";
-    Resultado["Normal"] = "Normal";
-})(Resultado || (Resultado = {}));
-exports.Resultado = Resultado;
-var TipoEntrenamiento;
-(function (TipoEntrenamiento) {
-    TipoEntrenamiento["Aerobico"] = "Aerobico";
-    TipoEntrenamiento["SubAerobico"] = "SubAerobico ";
-    TipoEntrenamiento["SuperAerobico"] = "SuperAerobico";
-    TipoEntrenamiento["VO2MAX"] = "VO2MAX";
-    TipoEntrenamiento["SUBMAX"] = "SUBMAX";
-})(TipoEntrenamiento || (TipoEntrenamiento = {}));
-exports.TipoEntrenamiento = TipoEntrenamiento;
-class Entrenamiento {
+exports.TipoEntrenamiento = exports.Resultado = exports.Entrenamiento = void 0;
+const lap_1 = require("./lap");
+const typeConfigs_1 = require("../typeConfigs");
+Object.defineProperty(exports, "Resultado", { enumerable: true, get: function () { return typeConfigs_1.Resultado; } });
+Object.defineProperty(exports, "TipoEntrenamiento", { enumerable: true, get: function () { return typeConfigs_1.TipoEntrenamiento; } });
+const class_transformer_1 = require("class-transformer");
+const persistable_1 = require("../../frontend/persistence/persistable");
+class Entrenamiento extends persistable_1.Persistable {
     comentario;
-    fecha;
-    resultado;
+    semana;
+    dia;
     laps = [];
+    resultado;
     tipoEntrenamiento;
-    constructor(comentario, estado, laps, tipoEntrenamiento, fecha) {
+    constructor(comentario, estado, laps, tipoEntrenamiento, semana, dia) {
+        super();
         this.comentario = comentario;
         this.resultado = estado;
         this.laps = laps;
         this.tipoEntrenamiento = tipoEntrenamiento;
-        this.fecha = fecha;
+        this.semana = semana;
+        this.dia = dia;
     }
-    distancia() {
-        return this.laps.map((lap) => lap.distancia).reduce((x, y) => x.valueOf() + y.valueOf(), 0);
+    agregarLap(lap) {
+        this.laps.push(lap);
     }
-    paceMaximo() {
-        var paces = this.paces();
-        var paceMax = paces[0];
-        for (var i = 0; i < paces.length; i++) {
-            if ((0, utils_1.mayorPace)(paces[i], paceMax) == paces[i]) {
-                paceMax = paces[i];
-            }
-        }
-        return paceMax;
+    getDiaEnAnio() {
+        return (this.getSemana() - 1) * 7 + this.getDia();
     }
-    pacePromedio() {
-        var paces = this.laps.map((lap) => lap.pace());
-        return paces.reduce((x, y) => x + y, 0) / paces.length;
+    getPaceMaximo() {
+        return this.laps.sort((lap1, lap2) => lap2.getVelocidad() - lap1.getVelocidad())[0].getPace();
     }
-    tiempoTotalDeEntrenamiento() {
-        return this.laps.map((lap) => lap.tiempo).reduce((durA, durB) => durA.valueOf() + durB.valueOf());
+    getPacePromedio() {
+        return this.laps.map(l => l.getPace()).reduce((x, y) => x + y, 0) / this.laps.length;
     }
-    getResultadoEntrenamiento() {
+    getVelocidadMaxima() {
+        return 1 / this.getPaceMaximo();
+    }
+    getVelocidadPromedio() {
+        return 1 / this.getPacePromedio();
+    }
+    getDistancia() {
+        return this.laps.map(l => l.getDistancia()).reduce((x, y) => x + y, 0);
+    }
+    getResultado() {
         return this.resultado;
     }
-    getFecha() {
-        return this.fecha;
+    getTipoEntrenamiento() {
+        return this.tipoEntrenamiento;
     }
-    paces() {
-        return this.laps.map(lap => lap.pace());
+    getComentario() {
+        return this.comentario;
     }
-    enSemanaDe(fecha) {
-        return (0, dayjs_1.default)(this.fecha).isSame(fecha, 'week');
+    getSemana() {
+        return this.semana;
     }
-    toObject() {
-        return {
-            comentario: this.comentario,
-            fecha: JSON.stringify(this.fecha),
-            resultado: this.resultado.toString(),
-            laps: this.laps.map(x => x.toObject()),
-            tipoEntrenamiento: this.tipoEntrenamiento.toString()
-        };
-    }
-    static fromObject(object) {
-        return new Entrenamiento(object.comentario, object.resultado, object.laps.map((l) => Lap.fromObject(l)), object.tipoEntrenamiento, new Date(object.fecha));
+    getDia() {
+        return this.dia;
     }
 }
+__decorate([
+    (0, class_transformer_1.Type)(() => lap_1.Lap),
+    __metadata("design:type", Array)
+], Entrenamiento.prototype, "laps", void 0);
 exports.Entrenamiento = Entrenamiento;
-class Lap {
-    distancia;
-    tiempo;
-    constructor(tiempo, distanciaRecorrida) {
-        this.tiempo = tiempo;
-        this.distancia = distanciaRecorrida;
-    }
-    pace() {
-        var tiempo = this.tiempo.valueOf() / this.distancia.valueOf();
-        return tiempo;
-    }
-    toObject() {
-        return { distancia: this.distancia, tiempo: this.tiempo };
-    }
-    static fromObject(object) {
-        return new Lap(object.tiempo, object.distanciaRecorrida);
-    }
-}
-exports.Lap = Lap;
 //# sourceMappingURL=entrenamiento.js.map

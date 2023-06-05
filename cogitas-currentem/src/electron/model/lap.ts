@@ -1,4 +1,4 @@
-import { Distancia, Tiempo, Pace } from "../typeConfigs"
+import { Distancia, Tiempo, Pace, Velocidad } from "../typeConfigs"
 
 export class Lap {
 
@@ -10,9 +10,22 @@ export class Lap {
         this.distancia = distanciaRecorrida
     }
 
-    public pace(): Pace {
-       var tiempo = this.tiempo.valueOf() / this.distancia.valueOf()
-       return tiempo
+    public getPace(): Pace {
+       return this.tiempo / this.distancia
     }
+
+    public getVelocidad() : Velocidad{
+        return this.distancia /  this.tiempo
+    }
+
+    public getDistancia() : Distancia{
+        return this.distancia
+    }
+
+    public getTiempo() : Tiempo {
+        return this.tiempo
+    }
+
+
 
 }

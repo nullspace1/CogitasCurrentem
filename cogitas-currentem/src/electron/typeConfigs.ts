@@ -4,74 +4,136 @@ export type Distancia = number;
 export type Pace = number;
 export type Velocidad = number;
 export type Peso = number;
-
-type OpcionesDistancia = 'Kilometro' | 'Milla' | 'Metro'
-type OpcionesTiempo = 'Minuto' | 'Hora' | 'Segundo'
-type OpcionesPace = 'SegundosPorKilometro' | 'MinutosPorKilometro'
-type OpcionesVelocidad = 'KilometrosPorMinuto' | 'MetrosPorSegundo'
-type OpcionesPeso = 'Libra' | 'Kilogramo'
-
-type ConversorDistancia = Record<OpcionesDistancia,Distancia>
-const ConversorDistancias : ConversorDistancia = {
-    Kilometro : 1000,
-    Milla: 1609.34,
-    Metro: 1
-}
-
-type ConversorTiempo = Record<OpcionesTiempo,Tiempo>
-const ConversorTiempos : ConversorTiempo = {
-    Minuto : 60,
-    Hora: 60 * 60,
-    Segundo: 1
-}
-
-type ConversorPace = Record<OpcionesPace,Pace>
-const ConversorPaces : ConversorPace = {
-    SegundosPorKilometro: 60,
-    MinutosPorKilometro: 1
-}
-
-type ConversorVelocidad = Record<OpcionesVelocidad,Velocidad>
-const ConversorVelocidades : ConversorVelocidad = {
-    KilometrosPorMinuto : 0.001,
-    MetrosPorSegundo : 1
-}
-
-type ConversorPeso = Record<OpcionesPeso,Peso>
-const ConversorPesos : ConversorPeso = {
-    Libra: 0.453592,
-    Kilogramo: 1
-}
-
-export function mayorPace(x : Pace, y : Pace){
-    return x < y ? x : y
-}
-
-// god is dead, and this line killed him
-export type Semana = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52
-
+export type Semana = number
+export type Dia = number
 
 export enum Sexo {
-    Hombre = "Hombre",
-    Mujer ="Mujer"
+  Hombre = "Hombre",
+  Mujer = "Mujer"
 }
 
 export enum Resultado {
-    Ausente = "Ausente",
-    Planificacion = "Planificacion",
-    Realizado = "Realizado",
-    Normal = "Normal"
+  Planificado = "Planificiado",
+  Abandono = "Abandono",
+  Normal = "Normal"
 }
 
 export enum TipoEntrenamiento {
-    Aerobico = "Aerobico",
-    SubAerobico = "SubAerobico ",
-    SuperAerobico = "SuperAerobico",
-    VO2MAX = "VO2MAX",
-    SUBMAX = "SUBMAX"
+  Aerobico = "Aerobico",
+  SubAerobico = "SubAerobico ",
+  SuperAerobico = "SuperAerobico",
+  VO2MAX = "VO2MAX",
+  SUBMAX = "SUBMAX"
 }
 
-export {ConversorPesos,ConversorDistancias, ConversorTiempos, ConversorPaces, ConversorVelocidades}
+export enum OpcionesDistancia {
+  Kilometro = 'Kilometro',
+  Milla = 'Milla',
+  Metro = 'Metro',
+}
+
+export enum OpcionesTiempo {
+  Minuto = 'Minuto',
+  Hora = 'Hora',
+  Segundo = 'Segundo',
+}
+
+export enum OpcionesPace {
+  SegundosPorKilometro = 'SegundosPorKilometro',
+  MinutosPorKilometro = 'MinutosPorKilometro',
+}
+
+export enum OpcionesVelocidad {
+  KilometrosPorMinuto = 'KilometrosPorMinuto',
+  MetrosPorSegundo = 'MetrosPorSegundo',
+}
+
+export enum OpcionesPeso {
+  Libra = 'Libra',
+  Kilogramo = 'Kilogramo',
+}
+
+
+export type ValueOption = OpcionesDistancia | OpcionesPace | OpcionesPeso | OpcionesTiempo | OpcionesVelocidad
+export abstract class Dimension {
+
+  values: Map<ValueOption, number>
+
+  getList(): ValueOption[] {
+    return Array.from(this.values.keys())
+  }
+
+  convert(value: number, to: ValueOption) {
+    return value / this.values.get(to)
+  }
+
+  default() : ValueOption {
+    return this.getList()[0]
+  }
+
+}
+
+export class DistanceConverter extends Dimension {
+
+  constructor() {
+    super()
+    this.values = new Map<ValueOption,number>([
+      [OpcionesDistancia.Kilometro, 1000],
+      [OpcionesDistancia.Milla, 1609.34],
+      [OpcionesDistancia.Metro, 1]
+    ])
+  }
+
+}
+
+export class TimeConverter extends Dimension {
+
+  constructor() {
+    super()
+    this.values = new Map<ValueOption,number>([
+      [OpcionesTiempo.Minuto, 60],
+      [OpcionesTiempo.Hora, 60 * 60],
+      [OpcionesTiempo.Segundo, 1]
+    ])
+  }
+
+}
+
+export class PaceConverter extends Dimension {
+  constructor() {
+    super()
+    this.values = new Map<OpcionesPace, Pace>([
+      [OpcionesPace.SegundosPorKilometro, 1 / 1000],
+      [OpcionesPace.MinutosPorKilometro, 60 / 1000]
+    ])
+  }
+}
+
+export class SpeedConverter extends Dimension {
+  constructor() {
+    super()
+    this.values = new Map<OpcionesVelocidad, Velocidad>([
+      [OpcionesVelocidad.KilometrosPorMinuto, 1000 / 60],
+      [OpcionesVelocidad.MetrosPorSegundo, 1]
+    ])
+  }
+}
+
+export class WeightConverter extends Dimension {
+  constructor() {
+    super()
+    this.values = new Map<OpcionesPeso, Peso>([
+      [OpcionesPeso.Libra, 0.453592],
+      [OpcionesPeso.Kilogramo, 1]
+    ])
+  }
+}
+
+export function mayorPace(x: Pace, y: Pace) {
+  return x < y ? x : y
+}
+
+
 
 
 

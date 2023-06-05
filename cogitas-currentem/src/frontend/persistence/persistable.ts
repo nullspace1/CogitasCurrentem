@@ -1,6 +1,10 @@
+import { Type } from "class-transformer"
+
 export abstract class Persistable {
 
-    id : string
+    id : string = ""
+
+    @Type(() => Date)
     creationDate : Date
 
 
@@ -12,13 +16,5 @@ export abstract class Persistable {
         this.id = Math.random().toString(16).slice(2)
     }
 
-    asObject(){
-        const object = this.toObject()
-        object.id = this.id
-        object.creationDate = this.creationDate.toDateString()
-        return object
-    }
-
-    abstract toObject()
 
 }

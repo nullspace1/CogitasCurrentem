@@ -1,75 +1,15 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AtletasCrear = void 0;
-const react_1 = __importStar(require("react"));
-const atleta_1 = require("../../electron/model/atleta");
-const persistence_1 = require("../persistence/persistence");
+const react_1 = __importDefault(require("react"));
+const AtletaForm_1 = require("./AtletaForm");
 const AtletasCrear = () => {
-    const [atletaData, setData] = (0, react_1.useState)({ nombre: "",
-        fechaNacimiento: "",
-        alturaEnCm: 0,
-        sexo: atleta_1.Sexo.Hombre,
-        aniosEntrenamiento: 0,
-        pesoEnKilos: 0,
-        objetivos: ""
-    });
-    const [date, dateSet] = (0, react_1.useState)("");
-    const handleChange = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        const type = event.target.type;
-        setData(prevData => ({ ...prevData, [name]: type === "number" ? parseInt(value, 10) : value }));
-    };
-    const crearAtleta = async () => {
-        var atleta = new atleta_1.Atleta(atletaData.nombre, new Date(atletaData.fechaNacimiento), atletaData.pesoEnKilos, atletaData.alturaEnCm, atletaData.sexo, atletaData.aniosEntrenamiento, atletaData.objetivos);
-        new persistence_1.DatabaseInterface(persistence_1.ExistingDatabase.atleta).add(atleta);
-        dateSet(atletaData.fechaNacimiento);
-    };
     return (react_1.default.createElement("div", null,
         react_1.default.createElement("h1", null, "Crear Atleta"),
-        react_1.default.createElement("form", { className: "Formulario", onSubmit: crearAtleta },
-            react_1.default.createElement("h2", null, " Datos Fisicos "),
-            react_1.default.createElement("label", { htmlFor: "nombre" }, "Nombre"),
-            react_1.default.createElement("input", { onChange: handleChange, type: "text", id: "nombre", name: "nombre", value: atletaData.nombre }),
-            react_1.default.createElement("label", { htmlFor: "fechaNacimiento" }, " Fecha de nacimiento "),
-            react_1.default.createElement("input", { onChange: handleChange, type: "date", id: "fechaNacimiento", name: "fechaNacimiento", value: atletaData.fechaNacimiento }),
-            react_1.default.createElement("label", { htmlFor: "alturaEnCm" }, " Altura (en cm)"),
-            react_1.default.createElement("input", { onChange: handleChange, type: "number", min: 0, id: "alturaEnCm", name: "alturaEnCm", value: atletaData.alturaEnCm }),
-            react_1.default.createElement("label", { htmlFor: "sexo" }, " Sexo "),
-            react_1.default.createElement("select", { onChange: handleChange, name: "sexo", value: atletaData.sexo },
-                react_1.default.createElement("option", { value: atleta_1.Sexo.Hombre }, " Hombre "),
-                react_1.default.createElement("option", { value: atleta_1.Sexo.Mujer }, " Mujer ")),
-            react_1.default.createElement("label", { htmlFor: "pesoEnKilos" }, " Peso (en kg) "),
-            react_1.default.createElement("input", { onChange: handleChange, type: "number", name: "pesoEnKilos", value: atletaData.pesoEnKilos }),
-            react_1.default.createElement("h2", null, " Sobre Atletismo"),
-            react_1.default.createElement("label", { htmlFor: "aniosEntrenamiento" }, "A\u00F1os de Entrenamiento"),
-            react_1.default.createElement("input", { onChange: handleChange, type: "number", min: 0, name: "aniosEntrenamiento", value: atletaData.aniosEntrenamiento }),
-            react_1.default.createElement("label", { htmlFor: "objetivos" }, " Objetivos "),
-            react_1.default.createElement("input", { onChange: handleChange, type: "text", name: "objetivos", value: atletaData.objetivos }),
-            react_1.default.createElement("button", { type: "submit" }, " Cargar "))));
+        react_1.default.createElement(AtletaForm_1.AtletaForm, { id: "" })));
 };
 exports.AtletasCrear = AtletasCrear;
 //# sourceMappingURL=CrearAtleta.js.map

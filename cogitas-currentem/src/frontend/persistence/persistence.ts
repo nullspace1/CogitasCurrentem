@@ -1,4 +1,5 @@
 
+import { instanceToPlain, plainToClass } from "class-transformer";
 import { Atleta } from "../../electron/model/atleta";
 import { Entrenamiento } from "../../electron/model/entrenamiento";
 import { Persistable } from "./persistable";
@@ -8,9 +9,9 @@ export enum ExistingDatabase {
     'entrenamientos'
 }
 
-const converters  = {
-    'atleta': (Atleta.fromObject),
-    'entrenamientos' : (Entrenamiento.fromObject)
+const classes  = {
+    'atleta': Atleta,
+    'entrenamientos' : Entrenamiento
 }
 
 declare global {
@@ -32,11 +33,12 @@ export class DatabaseInterface{
 
     async getAll() : Promise<Persistable[]>{
         const objects = await window.electron.getObjectList(this.databaseName)
-        return objects.map(o => converters[this.databaseName](o))
+        return objects.map(o => plainToClass(classes[this.databaseName],o))
     }
 
     async setObjects(objects : Persistable[]){
-        window.electron.setObjectList(objects.map(object => object.asObject()),this.databaseName)
+        let objs = objects.map(object => instanceToPlain(object))
+        window.electron.setObjectList(objs,this.databaseName)
     }
 
     async add(object : Persistable){
@@ -47,11 +49,25 @@ export class DatabaseInterface{
         this.setObjects(objects)
     }
 
+    async replace(old : Persistable, replacement : Persistable){
+        const objects = await this.getAll()
+        var filteredObjects = objects.filter(a => a.id !== old.id )
+        replacement.id = old.id
+        replacement.creationDate = old.creationDate
+        filteredObjects.push(replacement)
+        await this.setObjects(filteredObjects)
+    }
+
     async delete(object : Persistable) : Promise<Persistable[]>{
         const originalObjects = await this.getAll()
         var filteredObjects = originalObjects.filter(a => a.id !== object.id )
         await this.setObjects(filteredObjects)
         return filteredObjects
+    }
+
+    async getById(id : string) : Promise<Persistable>{
+        const objects = await this.getAll()
+        return objects.filter(o => o.id === id)[0]
     }
 
 }

@@ -1,106 +1,146 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sexo = exports.Atleta = void 0;
+const class_transformer_1 = require("class-transformer");
 const persistable_1 = require("../../frontend/persistence/persistable");
+const dates_1 = require("../dates");
+const typeConfigs_1 = require("../typeConfigs");
+Object.defineProperty(exports, "Sexo", { enumerable: true, get: function () { return typeConfigs_1.Sexo; } });
 const entrenamiento_1 = require("./entrenamiento");
-const planificacion_1 = require("./planificacion");
-var Sexo;
-(function (Sexo) {
-    Sexo["Hombre"] = "Hombre";
-    Sexo["Mujer"] = "Mujer";
-})(Sexo || (Sexo = {}));
-exports.Sexo = Sexo;
+const macrociclos_1 = require("./macrociclos");
 class Atleta extends persistable_1.Persistable {
-    alturaEnCm;
-    fechaNacimiento;
-    nombre;
-    pesoEnKilos;
-    sexo;
+    altura;
     aniosEntrenamiento;
+    carreras;
+    entrenamientos;
+    fechaNacimiento;
+    macroCiclos;
+    nombre;
     objetivos;
-    entrenamientosRealizados;
-    mesoCiclos;
+    peso;
+    sexo;
     tests;
-    ritmoMaximo;
-    fechaCreacion;
-    constructor(nombre, fechaNacimiento, pesoEnKilos, alturaEnCm, sexo, aniosEntrenamiento, objetivos) {
+    dateGenerator;
+    constructor(nombre, fechaNacimiento, peso, altura, sexo, aniosEntrenamiento, objetivos, dateGenerator) {
         super();
         this.nombre = nombre;
         this.fechaNacimiento = fechaNacimiento;
-        this.alturaEnCm = alturaEnCm;
+        this.altura = altura;
         this.sexo = sexo;
         this.tests = [];
-        this.entrenamientosRealizados = [];
+        this.carreras = [];
+        this.entrenamientos = [];
         this.aniosEntrenamiento = aniosEntrenamiento;
-        this.mesoCiclos = [];
-        this.ritmoMaximo = -1;
-        this.pesoEnKilos = pesoEnKilos;
+        this.macroCiclos = [];
+        this.peso = peso;
         this.objetivos = objetivos;
+        this.dateGenerator = dateGenerator === undefined ? new dates_1.DefaultDateGenerator() : dateGenerator;
     }
-    ausencias() {
-        return this.entrenamientosRealizados.filter(entrenamiento => entrenamiento.getResultadoEntrenamiento() === entrenamiento_1.Resultado.Ausente);
+    getAllEntrenamientos() {
+        let allEntrenamientos = [];
+        allEntrenamientos.push(...this.carreras);
+        allEntrenamientos.push(...this.tests);
+        allEntrenamientos.push(...this.entrenamientos);
+        return allEntrenamientos;
     }
-    realizados() {
-        return this.entrenamientosRealizados.filter(entrenamiento => entrenamiento.getResultadoEntrenamiento() === entrenamiento_1.Resultado.Normal);
+    getRitmoMaximo() {
+        let entrenamientos = this.getAllEntrenamientos();
+        return entrenamientos.length === 0 ? 0 : entrenamientos.sort((x, y) => x.getPaceMaximo() - y.getPaceMaximo())[0].getPaceMaximo();
     }
-    distanciaSemanal(fecha) {
-        return this.entrenamientosEnSemanaDe(fecha).map((entrenamiento) => entrenamiento.distancia()).reduce((x, y) => x.valueOf() + y.valueOf(), 0);
+    getVelocidadMaxima() {
+        return this.getRitmoMaximo() === 0 ? 0 : 1 / this.getRitmoMaximo();
     }
-    entrenamientosEnSemanaDe(fecha) {
-        return this.entrenamientosRealizados.filter(e => e.enSemanaDe(fecha));
+    getRitmoAl(porcentage) {
+        return (1 / (1 / this.getRitmoMaximo() * porcentage));
     }
-    registrarEntrenamiento(nuevoEntrenamiento) {
-        this.entrenamientosRealizados.push(nuevoEntrenamiento);
+    getDistanciaSemanal() {
+        return this.getAllEntrenamientos().filter(e => this.dateGenerator.getSemana() === e.getSemana()).map(x => x.getDistancia()).reduce((x, y) => x + y, 0);
     }
-    registrarTest(test) {
+    agregarCarrera(carrera) {
+        this.carreras.push(carrera);
+    }
+    agregarMacroCiclo(macroCiclo) {
+        this.macroCiclos.push(macroCiclo);
+    }
+    agregarTest(test) {
         this.tests.push(test);
-        this.ritmoMaximo = test.paceMaximo();
     }
-    calcularRitmoAl(porcentaje) {
-        return 1 / (this.ritmoMaximo.valueOf() * porcentaje.valueOf());
+    agregarEntrenamiento(nuevoEntrenamiento) {
+        this.entrenamientos.push(nuevoEntrenamiento);
     }
-    agregarMesociclo(mesociclo) {
-        this.mesoCiclos.push(mesociclo);
+    getAniosEntrenando() {
+        const crDate = this.creationDate.valueOf();
+        return new Date(this.dateGenerator.getHoy() - crDate).getFullYear() - 1970;
     }
     getAniosEntrenamiento() {
         return this.aniosEntrenamiento + this.getAniosEntrenando();
     }
-    getAniosEntrenando() {
-        return new Date(Date.now() - this.fechaCreacion.valueOf()).getFullYear() - 1970;
-    }
     getEdad() {
-        return new Date(Date.now() - this.fechaNacimiento.valueOf()).getFullYear() - 1970;
+        return new Date(this.dateGenerator.getHoy() - this.fechaNacimiento.valueOf()).getFullYear() - 1970;
     }
-    setFechaCreacion(fecha) {
-        this.fechaCreacion = fecha.valueOf() === 0 ? new Date() : fecha;
+    getAltura() {
+        return this.altura;
     }
-    agregarEntrenamiento(entrenamiento) {
-        this.entrenamientosRealizados.push(entrenamiento);
+    getNombre() {
+        return this.nombre;
     }
-    toObject() {
-        return {
-            alturaEnCm: this.alturaEnCm,
-            fechaNacimiento: this.fechaNacimiento.toDateString(),
-            nombre: this.nombre,
-            pesoEnKilos: this.pesoEnKilos,
-            sexo: this.sexo.toString(),
-            aniosEntrenamiento: this.aniosEntrenamiento,
-            objetivos: this.objetivos,
-            entrenamientosRealizados: this.entrenamientosRealizados.map(e => e.toObject()),
-            mesoCiclos: this.mesoCiclos.map(m => m.toObject()),
-            tests: this.tests.map(t => t.toObject()),
-            ritmomaximo: this.ritmoMaximo,
-            fechaCreacion: this.fechaCreacion.toDateString()
-        };
+    getObjetivos() {
+        return this.objetivos;
     }
-    static fromObject(object) {
-        var atleta = new Atleta(object.nombre, new Date(object.fechaNacimiento), object.pesoEnKilos, object.alturaEnCm, object.sexo, object.aniosEntrenamiento, object.objetivos);
-        object.tests.forEach((t) => atleta.registrarTest(entrenamiento_1.Entrenamiento.fromObject(t)));
-        object.entrenamientosRealizados.forEach((e) => atleta.registrarEntrenamiento(entrenamiento_1.Entrenamiento.fromObject(e)));
-        object.mesoCiclos.forEach((m) => atleta.agregarMesociclo(planificacion_1.MesoCiclo.fromObject(m)));
-        atleta.setFechaCreacion(new Date(object.fechaCreacion));
-        return atleta;
+    getPeso() {
+        return this.peso;
+    }
+    getSexo() {
+        return this.sexo;
+    }
+    getEntrenamientos() {
+        return this.entrenamientos;
+    }
+    getCarreras() {
+        return this.carreras;
+    }
+    getTests() {
+        return this.tests;
+    }
+    getMacroCiclos() {
+        return this.macroCiclos;
+    }
+    getFechaNacimiento() {
+        return this.fechaNacimiento;
     }
 }
+__decorate([
+    (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
+    __metadata("design:type", Array)
+], Atleta.prototype, "carreras", void 0);
+__decorate([
+    (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
+    __metadata("design:type", Array)
+], Atleta.prototype, "entrenamientos", void 0);
+__decorate([
+    (0, class_transformer_1.Type)(() => Date),
+    __metadata("design:type", Date)
+], Atleta.prototype, "fechaNacimiento", void 0);
+__decorate([
+    (0, class_transformer_1.Type)(() => macrociclos_1.MacroCiclo),
+    __metadata("design:type", Array)
+], Atleta.prototype, "macroCiclos", void 0);
+__decorate([
+    (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
+    __metadata("design:type", Array)
+], Atleta.prototype, "tests", void 0);
+__decorate([
+    (0, class_transformer_1.Exclude)(),
+    __metadata("design:type", Object)
+], Atleta.prototype, "dateGenerator", void 0);
 exports.Atleta = Atleta;
 //# sourceMappingURL=atleta.js.map
