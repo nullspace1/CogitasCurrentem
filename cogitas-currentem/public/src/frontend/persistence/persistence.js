@@ -51,6 +51,12 @@ class DatabaseInterface {
         const objects = await this.getAll();
         return objects.filter(o => o.id === id)[0];
     }
+    async update(object) {
+        let list = await this.getAll();
+        let newlist = list.filter(o => o.id !== object.id);
+        newlist.push(object);
+        this.setObjects(newlist);
+    }
 }
 exports.DatabaseInterface = DatabaseInterface;
 //# sourceMappingURL=persistence.js.map

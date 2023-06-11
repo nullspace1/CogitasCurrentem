@@ -70,4 +70,11 @@ export class DatabaseInterface{
         return objects.filter(o => o.id === id)[0]
     }
 
+    async update(object : Persistable) {
+        let list = await this.getAll()
+        let newlist = list.filter(o => o.id !== object.id)
+        newlist.push(object)
+        this.setObjects(newlist)
+    }
+
 }

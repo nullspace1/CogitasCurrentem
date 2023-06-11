@@ -64,7 +64,7 @@ export abstract class Dimension {
   }
 
   convert(value: number, to: ValueOption) {
-    return value / this.values.get(to)
+    return (value / this.values.get(to)).toFixed(Math.abs(Math.ceil(Math.log10(this.values.get(to)))) + 2)
   }
 
   default() : ValueOption {
@@ -78,9 +78,9 @@ export class DistanceConverter extends Dimension {
   constructor() {
     super()
     this.values = new Map<ValueOption,number>([
+      [OpcionesDistancia.Metro, 1],
       [OpcionesDistancia.Kilometro, 1000],
-      [OpcionesDistancia.Milla, 1609.34],
-      [OpcionesDistancia.Metro, 1]
+      [OpcionesDistancia.Milla, 1609.34]
     ])
   }
 

@@ -79,7 +79,7 @@ class Atleta extends persistable_1.Persistable {
     }
     getAniosEntrenando() {
         const crDate = this.creationDate.valueOf();
-        return new Date(this.dateGenerator.getHoy() - crDate).getFullYear() - 1970;
+        return new Date(this.dateGenerator.getHoy() - crDate).getFullYear() - 1970 + 1;
     }
     getAniosEntrenamiento() {
         return this.aniosEntrenamiento + this.getAniosEntrenando();

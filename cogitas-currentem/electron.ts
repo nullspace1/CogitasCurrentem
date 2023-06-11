@@ -18,7 +18,7 @@ export function e(list: number[][], week) {
 }
 
 export function getAtleta(fechaNacimiento, aniosEntrenamiento, entrenamiento, carrera, test) {
-    let z = new Atleta("Lautaro", fechaNacimiento, 62, 170, Sexo.Hombre, aniosEntrenamiento, "")
+    let z = new Atleta("Lautaro", fechaNacimiento, 62, 1.7, Sexo.Hombre, aniosEntrenamiento, "")
     z.agregarEntrenamiento(entrenamiento)
     z.agregarCarrera(carrera)
     z.agregarTest(test)

@@ -41,13 +41,13 @@ function MacroCiclo({ atleta }: { atleta: Atleta }) {
   return (
     <div>
       <h2>Macrociclos</h2>
-      <Link to={'./macrociclo/nuevo'}>Crear Nuevo</Link>
+      <Link to={'/macrociclo/nuevo'} state={{ids : [atleta.id]}}>Crear Nuevo</Link>
       <ul>
         {macrociclo.map(m =>
           <ul>
             <li>Nombre: {m.getNombre()}</li>
             <li>Anio: {m.getAnio()}</li>
-            <Link to={'./macrociclo/' + m.id}> Ver </Link>
+            <Link to={'/macrociclo/' + m.id} > Ver </Link>
           </ul>
         )}
       </ul>

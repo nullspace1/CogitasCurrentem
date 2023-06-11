@@ -12,14 +12,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Periodo = void 0;
 const class_transformer_1 = require("class-transformer");
 const mesociclos_1 = require("./mesociclos");
-class Periodo {
+const persistable_1 = require("../../frontend/persistence/persistable");
+class Periodo extends persistable_1.Persistable {
     mesoCiclos;
     semanaComienzo;
     semanaFin;
     nombre;
     constructor(semanaComienzo, semanaFin, nombre) {
+        super();
         this.semanaComienzo = semanaComienzo;
         this.semanaFin = semanaFin;
+        this.nombre = nombre;
         this.mesoCiclos = [];
     }
     agregarMesoCiclo(mesoCiclo) {

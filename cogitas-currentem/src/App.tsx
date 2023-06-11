@@ -9,7 +9,8 @@ import { Header } from './frontend/Components/External';
 import { AtletasCrear } from './frontend/Atletas/CrearAtleta';
 import { AtletaPag } from './frontend/Atletas/AtletaIndividual';
 import { EditarAtleta } from "./frontend/Atletas/EditarAtleta";
-import { MacroCicloCrear } from "./frontend/Atletas/CrearMacrociclo";
+import { MacroCicloCrear } from "./frontend/Macrociclos/CrearMacrociclo";
+import { VerMacroCiclo } from "./frontend/Macrociclos/VerMacroCiclo";
 
 
 
@@ -26,7 +27,8 @@ const App: React.FC = () => {
         <Route path='/atleta/nuevo' Component={AtletasCrear} />
         <Route path='/atleta/:id' Component={AtletaPag} />
         <Route path='/atleta/:id/edicion' Component={EditarAtleta}/>
-        <Route path='/atleta/:id/macrociclo/nuevo' Component={MacroCicloCrear}/>
+        <Route path='/macrociclo/nuevo' Component={MacroCicloCrear}/>
+        <Route path='/macrociclo/:id' Component={VerMacroCiclo}/>
       </Routes>
     </div>
   );

@@ -61,7 +61,8 @@ exports.AtletaPag = AtletaPag;
 function MacroCiclo({ atleta }) {
     let macrociclo = atleta.getMacroCiclos();
     return (react_1.default.createElement("div", null,
-        react_1.default.createElement(react_router_dom_1.Link, { to: './macrociclo/nuevo' }, "Crear Nuevo"),
+        react_1.default.createElement("h2", null, "Macrociclos"),
+        react_1.default.createElement(react_router_dom_1.Link, { to: '/macrociclo/nuevo', state: { ids: [atleta.id] } }, "Crear Nuevo"),
         react_1.default.createElement("ul", null, macrociclo.map(m => react_1.default.createElement("ul", null,
             react_1.default.createElement("li", null,
                 "Nombre: ",
@@ -69,7 +70,7 @@ function MacroCiclo({ atleta }) {
             react_1.default.createElement("li", null,
                 "Anio: ",
                 m.getAnio()),
-            react_1.default.createElement(react_router_dom_1.Link, { to: './macrociclo/' + m.id }, " Ver "))))));
+            react_1.default.createElement(react_router_dom_1.Link, { to: '/macrociclo/' + m.id }, " Ver "))))));
 }
 function InformacionPersonal({ atleta }) {
     return (react_1.default.createElement("div", null,

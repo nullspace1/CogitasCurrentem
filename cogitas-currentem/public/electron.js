@@ -21,7 +21,7 @@ function e(list, week) {
 }
 exports.e = e;
 function getAtleta(fechaNacimiento, aniosEntrenamiento, entrenamiento, carrera, test) {
-    let z = new atleta_1.Atleta("Lautaro", fechaNacimiento, 62, 170, typeConfigs_1.Sexo.Hombre, aniosEntrenamiento, "");
+    let z = new atleta_1.Atleta("Lautaro", fechaNacimiento, 62, 1.7, typeConfigs_1.Sexo.Hombre, aniosEntrenamiento, "");
     z.agregarEntrenamiento(entrenamiento);
     z.agregarCarrera(carrera);
     z.agregarTest(test);

@@ -1,9 +1,10 @@
 import { Type } from "class-transformer"
 import { Semana } from "../typeConfigs"
 import { MesoCiclo } from "./mesociclos"
+import { Persistable } from "../../frontend/persistence/persistable"
 
 
-export class Periodo {
+export class Periodo extends Persistable{
     @Type(() => MesoCiclo)
     private mesoCiclos : MesoCiclo[]
     private semanaComienzo : Semana
@@ -11,8 +12,10 @@ export class Periodo {
     private nombre : string
 
     constructor(semanaComienzo : Semana, semanaFin : Semana, nombre : string){
+        super()
         this.semanaComienzo = semanaComienzo
         this.semanaFin = semanaFin
+        this.nombre = nombre
         this.mesoCiclos = []
     }
 
