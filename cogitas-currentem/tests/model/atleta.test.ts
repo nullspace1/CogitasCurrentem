@@ -23,8 +23,9 @@ class MockGenerator implements DateGenerator{
 
 export function e(list : number[][], week){
     const laps : Lap[] = []
+    const entrenamiento = new Entrenamiento('',Resultado.Normal,laps,TipoEntrenamiento.SUBMAX,week,1)
     for (const [a,b] of list){
-        laps.push(new Lap(a,b))
+        entrenamiento.agregarLap(new Lap(a,b,entrenamiento))
     }
     return new Entrenamiento('',Resultado.Normal,laps,TipoEntrenamiento.SUBMAX,week,1)
 }
@@ -34,7 +35,6 @@ export function getAtleta(fechaNacimiento, aniosEntrenamiento,entrenamiento, car
     z.agregarEntrenamiento(entrenamiento)
     z.agregarCarrera(carrera)
     z.agregarTest(test)
-    z.setDateOfCreation()
     return z
 }
 

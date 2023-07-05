@@ -10,20 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Persistable = void 0;
-const class_transformer_1 = require("class-transformer");
+const typeorm_1 = require("typeorm");
 class Persistable {
-    id = "";
-    creationDate;
-    setDateOfCreation() {
-        this.creationDate = new Date();
-    }
-    setId() {
-        this.id = Math.random().toString(16).slice(2);
-    }
+    id;
 }
 __decorate([
-    (0, class_transformer_1.Type)(() => Date),
-    __metadata("design:type", Date)
-], Persistable.prototype, "creationDate", void 0);
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Persistable.prototype, "id", void 0);
 exports.Persistable = Persistable;
 //# sourceMappingURL=persistable.js.map

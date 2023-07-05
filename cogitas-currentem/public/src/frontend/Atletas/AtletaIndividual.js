@@ -28,17 +28,18 @@ const react_1 = __importStar(require("react"));
 const react_router_dom_1 = require("react-router-dom");
 const persistence_1 = require("../persistence/persistence");
 const typeConfigs_1 = require("../../electron/typeConfigs");
+const anio_1 = require("../../electron/model/anio");
+const UnitSelector_1 = require("./UnitSelector");
 const AtletaPag = () => {
     const { id } = (0, react_router_dom_1.useParams)();
     const [atletaInfo, setAtletaInfo] = (0, react_1.useState)(null);
     (0, react_1.useLayoutEffect)(() => {
         const fetch = async () => {
-            const atletas = await new persistence_1.DatabaseInterface(persistence_1.ExistingDatabase.atleta).getAll();
-            const atleta = atletas.filter(x => x.id == id)[0];
+            const atleta = await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).getById(id);
             setAtletaInfo(atleta);
         };
         fetch();
-    }, []);
+    }, [id]);
     if (atletaInfo == null)
         return (react_1.default.createElement("div", null));
     return (react_1.default.createElement("div", null,
@@ -59,18 +60,23 @@ const AtletaPag = () => {
 };
 exports.AtletaPag = AtletaPag;
 function MacroCiclo({ atleta }) {
-    let macrociclo = atleta.getMacroCiclos();
+    const [macrociclo, setMacrociclo] = (0, react_1.useState)(atleta.getMacroCiclos());
+    const navigate = (0, react_router_dom_1.useNavigate)();
+    const crearMacrociclo = async () => {
+        const anio = new anio_1.Anio((new Date().getFullYear()));
+        atleta.agregarMacroCiclo(anio);
+        await new persistence_1.DatabaseInterface(persistence_1.Tables.macrociclo).add(anio);
+        await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).update(atleta);
+        navigate('./macrociclo/' + anio.id);
+    };
     return (react_1.default.createElement("div", null,
         react_1.default.createElement("h2", null, "Macrociclos"),
-        react_1.default.createElement(react_router_dom_1.Link, { to: '/macrociclo/nuevo', state: { ids: [atleta.id] } }, "Crear Nuevo"),
+        react_1.default.createElement("button", { onClick: () => crearMacrociclo() }, "Crear Nuevo"),
         react_1.default.createElement("ul", null, macrociclo.map(m => react_1.default.createElement("ul", null,
-            react_1.default.createElement("li", null,
-                "Nombre: ",
-                m.getNombre()),
             react_1.default.createElement("li", null,
                 "Anio: ",
                 m.getAnio()),
-            react_1.default.createElement(react_router_dom_1.Link, { to: '/macrociclo/' + m.id }, " Ver "))))));
+            react_1.default.createElement(react_router_dom_1.Link, { to: './macrociclo/' + m.id }, " Ver "))))));
 }
 function InformacionPersonal({ atleta }) {
     return (react_1.default.createElement("div", null,
@@ -82,10 +88,10 @@ function InformacionPersonal({ atleta }) {
                 " "),
             react_1.default.createElement("li", null,
                 "Peso: ",
-                react_1.default.createElement(UnitSelector, { value: atleta.getPeso(), converter: new typeConfigs_1.WeightConverter() })),
+                react_1.default.createElement(UnitSelector_1.UnitSelector, { value: atleta.getPeso(), converter: new typeConfigs_1.WeightConverter() })),
             react_1.default.createElement("li", null,
                 "Altura: ",
-                react_1.default.createElement(UnitSelector, { value: atleta.getAltura(), converter: new typeConfigs_1.DistanceConverter() }),
+                react_1.default.createElement(UnitSelector_1.UnitSelector, { value: atleta.getAltura(), converter: new typeConfigs_1.DistanceConverter() }),
                 " "),
             react_1.default.createElement("li", null,
                 "Sexo: ",
@@ -102,11 +108,11 @@ function InformacionAtleta({ atleta }) {
                 "Objetivo Actual: ",
                 atleta.getObjetivos()),
             react_1.default.createElement("li", null,
-                "Kilometros Semanales: ",
-                react_1.default.createElement(UnitSelector, { value: atleta.getDistanciaSemanal(), converter: new typeConfigs_1.DistanceConverter() })),
+                "Distancia Semanal: ",
+                react_1.default.createElement(UnitSelector_1.UnitSelector, { value: atleta.getDistanciaSemanal(), converter: new typeConfigs_1.DistanceConverter() })),
             react_1.default.createElement("li", null,
                 "Ritmo Maximo: ",
-                react_1.default.createElement(UnitSelector, { value: atleta.getRitmoMaximo(), converter: new typeConfigs_1.PaceConverter() })))));
+                react_1.default.createElement(UnitSelector_1.UnitSelector, { value: atleta.getRitmoMaximo(), converter: new typeConfigs_1.PaceConverter() })))));
 }
 function EntrenamientosList({ list, nombre }) {
     return (react_1.default.createElement("div", null,
@@ -127,16 +133,9 @@ function EntrenamientosList({ list, nombre }) {
                         "Resultado: ",
                         e.getResultado().toString()),
                     react_1.default.createElement("li", null,
-                        "Cantidad de kilometros: ",
-                        react_1.default.createElement(UnitSelector, { value: e.getDistancia(), converter: new typeConfigs_1.DistanceConverter() }))),
+                        "Distancia Total: ",
+                        react_1.default.createElement(UnitSelector_1.UnitSelector, { value: e.getDistancia(), converter: new typeConfigs_1.DistanceConverter() }))),
                 react_1.default.createElement(react_router_dom_1.Link, { to: './entrenamientos/' + e.id }, "Ver")))))));
 }
 exports.EntrenamientosList = EntrenamientosList;
-const UnitSelector = ({ value, converter }) => {
-    const [selectedUnit, setSelectedUnit] = (0, react_1.useState)(converter.default());
-    return (react_1.default.createElement("div", null,
-        converter.convert(value, selectedUnit),
-        react_1.default.createElement("select", { value: selectedUnit, onChange: (e) => setSelectedUnit(e.target.value) }, converter.getList().map((unit) => (react_1.default.createElement("option", { value: unit, key: unit }, unit))))));
-};
-exports.default = UnitSelector;
 //# sourceMappingURL=AtletaIndividual.js.map

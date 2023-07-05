@@ -3,15 +3,19 @@ import { instanceToPlain, plainToClass } from "class-transformer";
 import { Atleta } from "../../electron/model/atleta";
 import { Entrenamiento } from "../../electron/model/entrenamiento";
 import { Persistable } from "./persistable";
+import { Anio } from "../../electron/model/anio";
 
-export enum ExistingDatabase {
+
+export enum Tables {
     'atleta',
-    'entrenamientos'
+    'entrenamientos',
+    'macrociclo'
 }
 
-const classes  = {
+export const TableClasses  = {
     'atleta': Atleta,
-    'entrenamientos' : Entrenamiento
+    'entrenamientos' : Entrenamiento,
+    'macrociclo' : Anio
 }
 
 declare global {
@@ -27,13 +31,15 @@ export class DatabaseInterface{
 
     databaseName : string
 
-    constructor(databaseName : ExistingDatabase){
-        this.databaseName = ExistingDatabase[databaseName].toString()
+    constructor(databaseName : Tables){
+        this.databaseName = Tables[databaseName].toString()
     }
 
     async getAll() : Promise<Persistable[]>{
         const objects = await window.electron.getObjectList(this.databaseName)
-        return objects.map(o => plainToClass(classes[this.databaseName],o))
+        const list : Persistable[]=  objects.map(o => plainToClass(TableClasses[this.databaseName],o))
+        list.forEach(o => o.init())
+        return list
     }
 
     async setObjects(objects : Persistable[]){
@@ -43,8 +49,6 @@ export class DatabaseInterface{
 
     async add(object : Persistable){
         const objects = await this.getAll()
-        object.setDateOfCreation()
-        object.setId()
         objects.push(object)
         this.setObjects(objects)
     }
@@ -53,7 +57,6 @@ export class DatabaseInterface{
         const objects = await this.getAll()
         var filteredObjects = objects.filter(a => a.id !== old.id )
         replacement.id = old.id
-        replacement.creationDate = old.creationDate
         filteredObjects.push(replacement)
         await this.setObjects(filteredObjects)
     }

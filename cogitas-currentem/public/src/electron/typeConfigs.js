@@ -53,7 +53,7 @@ class Dimension {
         return Array.from(this.values.keys());
     }
     convert(value, to) {
-        return value / this.values.get(to);
+        return (value / this.values.get(to)).toFixed(Math.abs(Math.ceil(Math.log10(this.values.get(to)))) + 2);
     }
     default() {
         return this.getList()[0];
@@ -64,9 +64,9 @@ class DistanceConverter extends Dimension {
     constructor() {
         super();
         this.values = new Map([
+            [OpcionesDistancia.Metro, 1],
             [OpcionesDistancia.Kilometro, 1000],
-            [OpcionesDistancia.Milla, 1609.34],
-            [OpcionesDistancia.Metro, 1]
+            [OpcionesDistancia.Milla, 1609.34]
         ]);
     }
 }

@@ -16,8 +16,9 @@ const dates_1 = require("../dates");
 const typeConfigs_1 = require("../typeConfigs");
 Object.defineProperty(exports, "Sexo", { enumerable: true, get: function () { return typeConfigs_1.Sexo; } });
 const entrenamiento_1 = require("./entrenamiento");
-const macrociclos_1 = require("./macrociclos");
-class Atleta extends persistable_1.Persistable {
+const anio_1 = require("./anio");
+const typeorm_1 = require("typeorm");
+let Atleta = class Atleta extends persistable_1.Persistable {
     altura;
     aniosEntrenamiento;
     carreras;
@@ -30,20 +31,24 @@ class Atleta extends persistable_1.Persistable {
     sexo;
     tests;
     dateGenerator;
+    creationDate;
+    init() {
+        this.macroCiclos = this.macroCiclos === undefined ? [] : this.macroCiclos;
+        this.tests = this.tests === undefined ? [] : this.tests;
+        this.entrenamientos = this.entrenamientos === undefined ? [] : this.entrenamientos;
+        this.carreras = this.carreras === undefined ? [] : this.carreras;
+    }
     constructor(nombre, fechaNacimiento, peso, altura, sexo, aniosEntrenamiento, objetivos, dateGenerator) {
         super();
         this.nombre = nombre;
         this.fechaNacimiento = fechaNacimiento;
         this.altura = altura;
         this.sexo = sexo;
-        this.tests = [];
-        this.carreras = [];
-        this.entrenamientos = [];
         this.aniosEntrenamiento = aniosEntrenamiento;
-        this.macroCiclos = [];
         this.peso = peso;
         this.objetivos = objetivos;
         this.dateGenerator = dateGenerator === undefined ? new dates_1.DefaultDateGenerator() : dateGenerator;
+        this.creationDate = (new Date());
     }
     getAllEntrenamientos() {
         let allEntrenamientos = [];
@@ -117,30 +122,74 @@ class Atleta extends persistable_1.Persistable {
     getFechaNacimiento() {
         return this.fechaNacimiento;
     }
-}
+};
+__decorate([
+    (0, typeorm_1.Column)({ type: "real" }),
+    __metadata("design:type", Number)
+], Atleta.prototype, "altura", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "real" }),
+    __metadata("design:type", Number)
+], Atleta.prototype, "aniosEntrenamiento", void 0);
 __decorate([
     (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
+    (0, typeorm_1.OneToMany)(() => entrenamiento_1.Entrenamiento, entrenamiento => entrenamiento.atleta),
     __metadata("design:type", Array)
 ], Atleta.prototype, "carreras", void 0);
 __decorate([
     (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
+    (0, typeorm_1.OneToMany)(() => entrenamiento_1.Entrenamiento, entrenamiento => entrenamiento.atleta),
     __metadata("design:type", Array)
 ], Atleta.prototype, "entrenamientos", void 0);
 __decorate([
     (0, class_transformer_1.Type)(() => Date),
+    (0, typeorm_1.Column)({ type: "date" }),
     __metadata("design:type", Date)
 ], Atleta.prototype, "fechaNacimiento", void 0);
 __decorate([
-    (0, class_transformer_1.Type)(() => macrociclos_1.MacroCiclo),
+    (0, class_transformer_1.Type)(() => anio_1.Anio),
+    (0, typeorm_1.ManyToMany)(() => anio_1.Anio),
     __metadata("design:type", Array)
 ], Atleta.prototype, "macroCiclos", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: "text" }),
+    __metadata("design:type", String)
+], Atleta.prototype, "nombre", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], Atleta.prototype, "objetivos", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'real' }),
+    __metadata("design:type", Number)
+], Atleta.prototype, "peso", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'simple-enum' }),
+    __metadata("design:type", String)
+], Atleta.prototype, "sexo", void 0);
+__decorate([
     (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
+    (0, typeorm_1.OneToMany)(() => entrenamiento_1.Entrenamiento, entrenamiento => entrenamiento.atleta),
     __metadata("design:type", Array)
 ], Atleta.prototype, "tests", void 0);
 __decorate([
     (0, class_transformer_1.Exclude)(),
     __metadata("design:type", Object)
 ], Atleta.prototype, "dateGenerator", void 0);
+__decorate([
+    (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
+    (0, typeorm_1.Column)({ type: 'date' }),
+    __metadata("design:type", Date)
+], Atleta.prototype, "creationDate", void 0);
+__decorate([
+    (0, typeorm_1.BeforeInsert)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Atleta.prototype, "init", null);
+Atleta = __decorate([
+    (0, typeorm_1.Entity)(),
+    __metadata("design:paramtypes", [String, Date, Number, Number, String, Number, String, Object])
+], Atleta);
 exports.Atleta = Atleta;
 //# sourceMappingURL=atleta.js.map

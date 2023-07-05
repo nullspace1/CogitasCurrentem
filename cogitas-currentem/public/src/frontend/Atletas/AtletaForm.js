@@ -41,7 +41,7 @@ function AtletaForm({ id }) {
     (0, react_1.useEffect)(() => {
         if (notEdited) {
             const getAtletaExistente = async (id) => {
-                const atleta = await new persistence_1.DatabaseInterface(persistence_1.ExistingDatabase.atleta).getById(id);
+                const atleta = await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).getById(id);
                 if (id !== "") {
                     setData({
                         nombre: atleta.getNombre(),
@@ -70,7 +70,7 @@ function AtletaForm({ id }) {
         atletaViejo.getTests().forEach(e => atletaNuevo.agregarTest(e));
     };
     const crearAtleta = async () => {
-        const db = new persistence_1.DatabaseInterface(persistence_1.ExistingDatabase.atleta);
+        const db = new persistence_1.DatabaseInterface(persistence_1.Tables.atleta);
         var atleta = new atleta_1.Atleta(atletaData.nombre, new Date(atletaData.fechaNacimiento), atletaData.peso, atletaData.altura, atletaData.sexo, atletaData.aniosEntrenamiento, atletaData.objetivos);
         if (id !== "") {
             const atletaViejo = await db.getById(id);

@@ -1,20 +1,14 @@
-import { Type } from "class-transformer"
+
+import {  PrimaryGeneratedColumn } from "typeorm"
+
+
+
 
 export abstract class Persistable {
 
-    id : string = ""
+    @PrimaryGeneratedColumn('uuid')
+    id : string
 
-    @Type(() => Date)
-    creationDate : Date
-
-
-    setDateOfCreation(){
-        this.creationDate = new Date()
-    }
-
-    setId(){
-        this.id = Math.random().toString(16).slice(2)
-    }
-
+    abstract init();
 
 }

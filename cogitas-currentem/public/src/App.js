@@ -14,8 +14,7 @@ const External_1 = require("./frontend/Components/External");
 const CrearAtleta_1 = require("./frontend/Atletas/CrearAtleta");
 const AtletaIndividual_1 = require("./frontend/Atletas/AtletaIndividual");
 const EditarAtleta_1 = require("./frontend/Atletas/EditarAtleta");
-const CrearMacrociclo_1 = require("./frontend/Macrociclos/CrearMacrociclo");
-const VerMacroCiclo_1 = require("./frontend/Macrociclos/VerMacroCiclo");
+const AnioView_1 = require("./frontend/Macrociclos/AnioView");
 const App = () => {
     return (react_1.default.createElement("div", null,
         react_1.default.createElement(External_1.Header, null),
@@ -27,8 +26,7 @@ const App = () => {
             react_1.default.createElement(react_router_dom_1.Route, { path: '/atleta/nuevo', Component: CrearAtleta_1.AtletasCrear }),
             react_1.default.createElement(react_router_dom_1.Route, { path: '/atleta/:id', Component: AtletaIndividual_1.AtletaPag }),
             react_1.default.createElement(react_router_dom_1.Route, { path: '/atleta/:id/edicion', Component: EditarAtleta_1.EditarAtleta }),
-            react_1.default.createElement(react_router_dom_1.Route, { path: '/macrociclo/nuevo', Component: CrearMacrociclo_1.MacroCicloCrear }),
-            react_1.default.createElement(react_router_dom_1.Route, { path: '/macrociclo/:id', Component: VerMacroCiclo_1.VerMacroCiclo }))));
+            react_1.default.createElement(react_router_dom_1.Route, { path: '/atleta/:idAtleta/macrociclo/:idMacrociclo', Component: AnioView_1.AnioView }))));
 };
 exports.default = App;
 //# sourceMappingURL=App.js.map

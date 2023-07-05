@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Sexo, Atleta } from "../../electron/model/atleta";
-import { DatabaseInterface, ExistingDatabase } from "../persistence/persistence";
+import { DatabaseInterface, Tables } from "../persistence/persistence";
 
 
 
@@ -22,7 +22,7 @@ export function AtletaForm({ id }: { id: string }) {
   useEffect(() => {
     if (notEdited) {
       const getAtletaExistente = async (id) => {
-        const atleta = await new DatabaseInterface(ExistingDatabase.atleta).getById(id) as Atleta
+        const atleta = await new DatabaseInterface(Tables.atleta).getById(id) as Atleta
         if (id !== "") {
           setData({
             nombre: atleta.getNombre(),
@@ -60,7 +60,7 @@ export function AtletaForm({ id }: { id: string }) {
   }
 
   const crearAtleta = async () => {
-    const db = new DatabaseInterface(ExistingDatabase.atleta);
+    const db = new DatabaseInterface(Tables.atleta);
     var atleta: Atleta = new Atleta(atletaData.nombre, new Date(atletaData.fechaNacimiento), atletaData.peso, atletaData.altura, atletaData.sexo, atletaData.aniosEntrenamiento, atletaData.objetivos);
     if (id !== "") {
       const atletaViejo = await db.getById(id) as Atleta;

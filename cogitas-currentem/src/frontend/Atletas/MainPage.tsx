@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Atleta } from "../../electron/model/atleta";
 import { Link, useParams } from "react-router-dom";
-import { DatabaseInterface, ExistingDatabase } from "../persistence/persistence";
+import { DatabaseInterface, Tables } from "../persistence/persistence";
 
 
 
@@ -15,7 +15,7 @@ export const Atletas = () => {
 
   useEffect(() => {
     const getAll = async () => {
-      const all = await new DatabaseInterface(ExistingDatabase.atleta).getAll()
+      const all = await new DatabaseInterface(Tables.atleta).getAll()
       setAtletas(all as Atleta[])
     }
     getAll();
@@ -32,7 +32,7 @@ export const Atletas = () => {
   }
 
   const borrarAtleta = async (atleta: Atleta) => {
-    const newAtletas = await new DatabaseInterface(ExistingDatabase.atleta).delete(atleta)
+    const newAtletas = await new DatabaseInterface(Tables.atleta).delete(atleta)
     setAtletas(newAtletas as Atleta[])
     setAtletasFiltrados(newAtletas as Atleta[])
   }

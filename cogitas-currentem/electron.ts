@@ -1,32 +1,18 @@
 import "reflect-metadata";
+import { Database, verbose } from 'sqlite3';
+import { classToPlain, plainToClass, plainToInstance } from 'class-transformer'
 import { BrowserWindow, ipcMain } from 'electron';
 import ElectronStore from 'electron-store';
 import path from 'path'
-import { ExistingDatabase } from './src/frontend/persistence/persistence';
+import { TableClasses, Tables } from './src/frontend/persistence/persistence';
 import { Atleta } from './src/electron/model/atleta';
 import { Entrenamiento } from './src/electron/model/entrenamiento';
 import { Lap } from './src/electron/model/lap';
 import { Resultado, TipoEntrenamiento, Sexo } from './src/electron/typeConfigs';
-
-
-export function e(list: number[][], week) {
-    const laps: Lap[] = []
-    for (const [a, b] of list) {
-        laps.push(new Lap(a, b))
-    }
-    return new Entrenamiento('Ent', Resultado.Normal, laps, TipoEntrenamiento.SUBMAX, week, 1)
-}
-
-export function getAtleta(fechaNacimiento, aniosEntrenamiento, entrenamiento, carrera, test) {
-    let z = new Atleta("Lautaro", fechaNacimiento, 62, 1.7, Sexo.Hombre, aniosEntrenamiento, "")
-    z.agregarEntrenamiento(entrenamiento)
-    z.agregarCarrera(carrera)
-    z.agregarTest(test)
-    z.setDateOfCreation()
-    z.setId()
-    return z
-}
-
+import { Anio, Grupo } from "./src/electron/model/anio";
+import { DataSource, ObjectLiteral, createConnection } from "typeorm";
+import { Persistable } from "./src/frontend/persistence/persistable";
+import { MicroCiclo } from "./src/electron/model/microciclo";
 
 export default class Main {
     static mainWindow: Electron.BrowserWindow;
@@ -69,26 +55,30 @@ export default class Main {
 
 
 
-function setStorageHandlers() {
 
-    const stores = {
-        'atleta': new ElectronStore()
-    }
+async function setStorageHandlers() {
 
-    let atleta = getAtleta(Date.parse("2000/01/01"), 3, e([[110, 400]], 1), e([[115, 400]], 3), e([[113, 400]], 1))
+    const connection = await new DataSource({
+        type: "sqlite",
+        database: ":memory:",
+        entities: [Atleta,Anio,MicroCiclo,Grupo,Entrenamiento,Lap],
+        synchronize: true,
+    }).initialize();
 
-    stores['atleta'].set('atleta', [atleta])
 
-    ipcMain.handle('getObjectList', (event, storeName: ExistingDatabase) => {
-        const usedStore = stores[storeName]
-        var x = usedStore.get(storeName)
-        console.log(x)
-        return x
-    })
+    ipcMain.handle('getObjectList', async (event, tableName: Tables) => {
+        const results = await connection.getRepository(TableClasses[tableName]).find()
+        return results;
+    });
 
-    ipcMain.handle('setObjectList', (event, ...args) => {
-        const [objectList, storeName] = args
-        const usedStore = stores[storeName]
-        usedStore.set(storeName, objectList)
-    })
+    ipcMain.handle('setObjectList', async (event, objectList : ObjectLiteral[], tableName: Tables) => {
+        const repository = connection.getRepository(TableClasses[tableName]);
+        repository.clear()
+        const objects = objectList.map(o => plainToInstance(TableClasses[tableName],o))
+        for (const element of objects) {
+            await repository.insert(element);
+        }
+
+    });
+
 }

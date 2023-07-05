@@ -3,35 +3,65 @@ import { Persistable } from "../../frontend/persistence/persistable"
 import { DateGenerator, DefaultDateGenerator } from "../dates"
 import { Pace, Peso, Sexo, Velocidad } from "../typeConfigs"
 import { Entrenamiento } from "./entrenamiento"
-import { MacroCiclo } from "./macrociclos"
+import { Anio } from "./anio"
+import { BeforeInsert, Column, Entity,  ManyToMany, OneToMany } from "typeorm"
 
+@Entity()
 class Atleta extends Persistable {
 
+    @Column({type: "real"})
     private altura: number
+
+    @Column({type:"real"})
     private aniosEntrenamiento: number
 
+
     @Type(() => Entrenamiento)
+    @OneToMany(() => Entrenamiento,entrenamiento => entrenamiento.atleta)
     private carreras: Entrenamiento[]
 
     @Type(() => Entrenamiento)
+    @OneToMany(() => Entrenamiento, entrenamiento => entrenamiento.atleta)
     private entrenamientos: Entrenamiento[]
 
     @Type(() => Date)
+    @Column({type:"date"})
     private fechaNacimiento: Date
 
-    @Type(() => MacroCiclo)
-    private macroCiclos: MacroCiclo[]
+    @Type(() =>Anio)
+    @ManyToMany(()=>Anio)
+    private macroCiclos: Anio[]
 
+    @Column({type:"text"})
     private nombre: string
+
+    @Column({type:'text'})
     private objetivos: string
+
+    @Column({type:'real'})
     private peso: Peso
+
+    @Column({type:'simple-enum'})
     private sexo: Sexo
 
     @Type(() => Entrenamiento)
+    @OneToMany(() => Entrenamiento, entrenamiento => entrenamiento.atleta)
     private tests: Entrenamiento[]
 
     @Exclude()
     private dateGenerator: DateGenerator
+
+    @Type(() => Entrenamiento)
+    @Column({type: 'date'})
+    private creationDate : Date
+
+
+    init(){
+       this.macroCiclos = this.macroCiclos === undefined ? [] : this.macroCiclos
+       this.tests = this.tests === undefined ? [] : this.tests
+       this.entrenamientos = this.entrenamientos === undefined ? [] : this.entrenamientos
+       this.carreras = this.carreras === undefined ? [] : this.carreras
+    }
 
 
     constructor(nombre: string, fechaNacimiento: Date, peso: Peso, altura: number,
@@ -41,14 +71,11 @@ class Atleta extends Persistable {
         this.fechaNacimiento = fechaNacimiento
         this.altura = altura
         this.sexo = sexo
-        this.tests = []
-        this.carreras = []
-        this.entrenamientos = []
         this.aniosEntrenamiento = aniosEntrenamiento
-        this.macroCiclos = []
         this.peso = peso
         this.objetivos = objetivos
         this.dateGenerator = dateGenerator === undefined ? new DefaultDateGenerator() : dateGenerator
+        this.creationDate = (new Date())
     }
 
 
@@ -82,7 +109,7 @@ class Atleta extends Persistable {
         this.carreras.push(carrera)
     }
 
-    public agregarMacroCiclo(macroCiclo: MacroCiclo) {
+    public agregarMacroCiclo(macroCiclo: Anio) {
         this.macroCiclos.push(macroCiclo)
     }
 
@@ -146,6 +173,8 @@ class Atleta extends Persistable {
     public getFechaNacimiento(){
         return this.fechaNacimiento
     }
+
+
 
 }
 

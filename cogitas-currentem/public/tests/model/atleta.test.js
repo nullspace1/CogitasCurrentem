@@ -15,8 +15,9 @@ class MockGenerator {
 }
 function e(list, week) {
     const laps = [];
+    const entrenamiento = new entrenamiento_1.Entrenamiento('', entrenamiento_1.Resultado.Normal, laps, entrenamiento_1.TipoEntrenamiento.SUBMAX, week, 1);
     for (const [a, b] of list) {
-        laps.push(new lap_1.Lap(a, b));
+        entrenamiento.agregarLap(new lap_1.Lap(a, b, entrenamiento));
     }
     return new entrenamiento_1.Entrenamiento('', entrenamiento_1.Resultado.Normal, laps, entrenamiento_1.TipoEntrenamiento.SUBMAX, week, 1);
 }
@@ -26,7 +27,6 @@ function getAtleta(fechaNacimiento, aniosEntrenamiento, entrenamiento, carrera, 
     z.agregarEntrenamiento(entrenamiento);
     z.agregarCarrera(carrera);
     z.agregarTest(test);
-    z.setDateOfCreation();
     return z;
 }
 exports.getAtleta = getAtleta;

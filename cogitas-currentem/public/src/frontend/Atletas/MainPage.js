@@ -33,7 +33,7 @@ const Atletas = () => {
     const [searchInput, setSearch] = (0, react_1.useState)("");
     (0, react_1.useEffect)(() => {
         const getAll = async () => {
-            const all = await new persistence_1.DatabaseInterface(persistence_1.ExistingDatabase.atleta).getAll();
+            const all = await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).getAll();
             setAtletas(all);
         };
         getAll();
@@ -50,7 +50,7 @@ const Atletas = () => {
             setAtletasFiltrados(atletas.filter(a => a.getNombre().toLowerCase().includes(e.target.value.toLowerCase())));
     };
     const borrarAtleta = async (atleta) => {
-        const newAtletas = await new persistence_1.DatabaseInterface(persistence_1.ExistingDatabase.atleta).delete(atleta);
+        const newAtletas = await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).delete(atleta);
         setAtletas(newAtletas);
         setAtletasFiltrados(newAtletas);
     };

@@ -4,23 +4,51 @@ import { Dia, Distancia, Pace, Resultado, Semana, Tiempo, TipoEntrenamiento, Vel
 import { Result } from 'electron'
 import { Type } from 'class-transformer'
 import { Persistable } from '../../frontend/persistence/persistable'
+import { Atleta } from './atleta'
+import { BeforeInsert, Column, Entity, ManyToOne, OneToMany } from 'typeorm'
+import { MicroCiclo } from './microciclo'
 
 
-
+@Entity()
 class Entrenamiento extends Persistable {
 
+
+    @Column({type:"text"})
     private comentario: string
+
+    @Column({type:"real"})
     private semana: Semana
+
+    @Column({type:"real"})
     private dia: Dia
 
+
     @Type(() => Lap)
+    @OneToMany(() => Lap,lap => lap.entrenamiento)
     private laps: Lap[] = []
 
+    @Column({type:"simple-enum"})
     private resultado: Resultado
+
+    @Column({type:"simple-enum"})
     private tipoEntrenamiento: TipoEntrenamiento
 
+
+    @Type(() => Atleta)
+    @ManyToOne(() => Atleta)
+    public atleta : Atleta
+
+    @Type(() => MicroCiclo)
+    @ManyToOne(() =>  MicroCiclo)
+    public microciclo : MicroCiclo
+
+    @BeforeInsert()
+    init(){
+       if (this.laps === undefined) this.laps = []
+    }
+
     constructor(comentario: string, estado: Resultado, laps: Lap[],
-        tipoEntrenamiento: TipoEntrenamiento, semana: Semana, dia: Dia) {
+        tipoEntrenamiento: TipoEntrenamiento, semana: Semana, dia: Dia, atleta ? : Atleta, microciclo ? :  MicroCiclo) {
         super()
         this.comentario = comentario
         this.resultado = estado
@@ -28,6 +56,8 @@ class Entrenamiento extends Persistable {
         this.tipoEntrenamiento = tipoEntrenamiento
         this.semana = semana
         this.dia = dia
+        this.atleta = atleta
+        this.microciclo = microciclo
     }
 
     public agregarLap(lap: Lap) {

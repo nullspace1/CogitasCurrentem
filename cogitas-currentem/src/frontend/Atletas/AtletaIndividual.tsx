@@ -1,21 +1,22 @@
 import React, { useState, useLayoutEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Atleta } from "../../electron/model/atleta";
-import { DatabaseInterface, ExistingDatabase } from "../persistence/persistence";
-import { Dimension, DistanceConverter, PaceConverter, ValueOption, WeightConverter } from "../../electron/typeConfigs";
+import { DatabaseInterface, Tables } from "../persistence/persistence";
+import { DistanceConverter, PaceConverter, WeightConverter } from "../../electron/typeConfigs";
+import { Anio } from "../../electron/model/anio";
+import { UnitSelector } from "./UnitSelector";
 
 export const AtletaPag: React.FC<any> = () => {
-  const { id } = useParams();
+  const  {id}  = useParams();
   const [atletaInfo, setAtletaInfo] = useState(null as Atleta)
 
   useLayoutEffect(() => {
     const fetch = async () => {
-      const atletas = await new DatabaseInterface(ExistingDatabase.atleta).getAll()
-      const atleta = atletas.filter(x => x.id == id)[0]
-      setAtletaInfo(atleta as Atleta)
+      const atleta =  await new DatabaseInterface(Tables.atleta).getById(id) as Atleta
+      setAtletaInfo(atleta)
     }
     fetch()
-  }, [])
+  }, [id])
 
   if (atletaInfo == null) return (<div></div>)
 
@@ -36,18 +37,26 @@ export const AtletaPag: React.FC<any> = () => {
 }
 
 function MacroCiclo({ atleta }: { atleta: Atleta }) {
-  let macrociclo = atleta.getMacroCiclos()
+  const [macrociclo,setMacrociclo] = useState(atleta.getMacroCiclos())
+  const navigate = useNavigate();
+
+  const crearMacrociclo = async () => {
+    const anio = new Anio((new Date().getFullYear()));
+    atleta.agregarMacroCiclo(anio);
+    await new DatabaseInterface(Tables.macrociclo).add(anio);
+    await new DatabaseInterface(Tables.atleta).update(atleta);
+    navigate('./macrociclo/'+anio.id)
+  }
 
   return (
     <div>
       <h2>Macrociclos</h2>
-      <Link to={'/macrociclo/nuevo'} state={{ids : [atleta.id]}}>Crear Nuevo</Link>
+      <button onClick={() => crearMacrociclo()}>Crear Nuevo</button>
       <ul>
         {macrociclo.map(m =>
           <ul>
-            <li>Nombre: {m.getNombre()}</li>
             <li>Anio: {m.getAnio()}</li>
-            <Link to={'/macrociclo/' + m.id} > Ver </Link>
+            <Link to={'./macrociclo/' + m.id} > Ver </Link>
           </ul>
         )}
       </ul>
@@ -76,7 +85,7 @@ function InformacionAtleta({ atleta }: { atleta: Atleta }) {
       <ul>
         <li>Años de entrenamiento: {atleta.getAniosEntrenamiento()}</li>
         <li>Objetivo Actual: {atleta.getObjetivos()}</li>
-        <li>Kilometros Semanales: <UnitSelector value={atleta.getDistanciaSemanal()} converter={new DistanceConverter()} /></li>
+        <li>Distancia Semanal: <UnitSelector value={atleta.getDistanciaSemanal()} converter={new DistanceConverter()} /></li>
         <li>Ritmo Maximo: <UnitSelector value={atleta.getRitmoMaximo()}  converter={new PaceConverter()} /></li>
       </ul>
     </div>
@@ -99,7 +108,7 @@ export function EntrenamientosList({ list, nombre }) {
                 <li>Semana: {e.getSemana()}</li>
                 <li>Dia: {e.getDia()}</li>
                 <li>Resultado: {e.getResultado().toString()}</li>
-                <li>Cantidad de kilometros: <UnitSelector value={e.getDistancia()} converter={ new DistanceConverter()} /></li>
+                <li>Distancia Total: <UnitSelector value={e.getDistancia()} converter={ new DistanceConverter()} /></li>
               </ul>
               <Link to={'./entrenamientos/' + e.id}>Ver</Link>
             </li>
@@ -111,19 +120,3 @@ export function EntrenamientosList({ list, nombre }) {
 }
 
 
-
-const UnitSelector = ({ value, converter }: { value: number, converter: Dimension }) => {
-  const [selectedUnit, setSelectedUnit] = useState(converter.default() as ValueOption);
-  return (
-    <div>
-      {converter.convert(value,selectedUnit)}
-      <select value={selectedUnit} onChange={(e) => setSelectedUnit(e.target.value as ValueOption)}>
-        {converter.getList().map((unit) => (
-          <option value={unit} key={unit}>{unit}</option>
-        ))}
-      </select>
-    </div>
-  );
-};
-
-export default UnitSelector;

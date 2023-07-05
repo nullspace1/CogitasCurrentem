@@ -11,11 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sesion = void 0;
 const class_transformer_1 = require("class-transformer");
-class Sesion {
+const typeorm_1 = require("typeorm");
+const persistable_1 = require("../../frontend/persistence/persistable");
+let Sesion = class Sesion extends persistable_1.Persistable {
     entrenamientos;
     lugar;
     semana;
     constructor(semana, entrenamientos, lugar) {
+        super();
         this.semana = semana;
         this.entrenamientos = entrenamientos;
         this.lugar = lugar;
@@ -34,10 +37,22 @@ class Sesion {
     getEntrenamientos() {
         return this.entrenamientos;
     }
-}
+};
 __decorate([
     (0, class_transformer_1.Type)(() => Map),
     __metadata("design:type", Map)
 ], Sesion.prototype, "entrenamientos", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text" }),
+    __metadata("design:type", String)
+], Sesion.prototype, "lugar", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "integer" }),
+    __metadata("design:type", Number)
+], Sesion.prototype, "semana", void 0);
+Sesion = __decorate([
+    (0, typeorm_1.Entity)(),
+    __metadata("design:paramtypes", [Number, Map, String])
+], Sesion);
 exports.Sesion = Sesion;
 //# sourceMappingURL=sesion.js.map

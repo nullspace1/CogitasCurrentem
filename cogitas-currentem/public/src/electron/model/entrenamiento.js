@@ -16,14 +16,23 @@ Object.defineProperty(exports, "Resultado", { enumerable: true, get: function ()
 Object.defineProperty(exports, "TipoEntrenamiento", { enumerable: true, get: function () { return typeConfigs_1.TipoEntrenamiento; } });
 const class_transformer_1 = require("class-transformer");
 const persistable_1 = require("../../frontend/persistence/persistable");
-class Entrenamiento extends persistable_1.Persistable {
+const atleta_1 = require("./atleta");
+const typeorm_1 = require("typeorm");
+const microciclo_1 = require("./microciclo");
+let Entrenamiento = class Entrenamiento extends persistable_1.Persistable {
     comentario;
     semana;
     dia;
     laps = [];
     resultado;
     tipoEntrenamiento;
-    constructor(comentario, estado, laps, tipoEntrenamiento, semana, dia) {
+    atleta;
+    microciclo;
+    init() {
+        if (this.laps === undefined)
+            this.laps = [];
+    }
+    constructor(comentario, estado, laps, tipoEntrenamiento, semana, dia, atleta, microciclo) {
         super();
         this.comentario = comentario;
         this.resultado = estado;
@@ -31,6 +40,8 @@ class Entrenamiento extends persistable_1.Persistable {
         this.tipoEntrenamiento = tipoEntrenamiento;
         this.semana = semana;
         this.dia = dia;
+        this.atleta = atleta;
+        this.microciclo = microciclo;
     }
     agregarLap(lap) {
         this.laps.push(lap);
@@ -68,10 +79,51 @@ class Entrenamiento extends persistable_1.Persistable {
     getDia() {
         return this.dia;
     }
-}
+};
+__decorate([
+    (0, typeorm_1.Column)({ type: "text" }),
+    __metadata("design:type", String)
+], Entrenamiento.prototype, "comentario", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "real" }),
+    __metadata("design:type", Number)
+], Entrenamiento.prototype, "semana", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "real" }),
+    __metadata("design:type", Number)
+], Entrenamiento.prototype, "dia", void 0);
 __decorate([
     (0, class_transformer_1.Type)(() => lap_1.Lap),
+    (0, typeorm_1.OneToMany)(() => lap_1.Lap, lap => lap.entrenamiento),
     __metadata("design:type", Array)
 ], Entrenamiento.prototype, "laps", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "simple-enum" }),
+    __metadata("design:type", String)
+], Entrenamiento.prototype, "resultado", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "simple-enum" }),
+    __metadata("design:type", String)
+], Entrenamiento.prototype, "tipoEntrenamiento", void 0);
+__decorate([
+    (0, class_transformer_1.Type)(() => atleta_1.Atleta),
+    (0, typeorm_1.ManyToOne)(() => atleta_1.Atleta),
+    __metadata("design:type", atleta_1.Atleta)
+], Entrenamiento.prototype, "atleta", void 0);
+__decorate([
+    (0, class_transformer_1.Type)(() => microciclo_1.MicroCiclo),
+    (0, typeorm_1.ManyToOne)(() => microciclo_1.MicroCiclo),
+    __metadata("design:type", microciclo_1.MicroCiclo)
+], Entrenamiento.prototype, "microciclo", void 0);
+__decorate([
+    (0, typeorm_1.BeforeInsert)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Entrenamiento.prototype, "init", null);
+Entrenamiento = __decorate([
+    (0, typeorm_1.Entity)(),
+    __metadata("design:paramtypes", [String, String, Array, String, Number, Number, atleta_1.Atleta, microciclo_1.MicroCiclo])
+], Entrenamiento);
 exports.Entrenamiento = Entrenamiento;
 //# sourceMappingURL=entrenamiento.js.map
