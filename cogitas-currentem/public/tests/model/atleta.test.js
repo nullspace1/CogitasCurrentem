@@ -9,6 +9,9 @@ class MockGenerator {
     getSemana() {
         return 1;
     }
+    getAnioActual() {
+        return 2023;
+    }
     getHoy() {
         return Date.now() + 1000 * 60 * 60 * 24 * 370 * 2;
     }
@@ -17,13 +20,13 @@ function e(list, week) {
     const laps = [];
     const entrenamiento = new entrenamiento_1.Entrenamiento('', entrenamiento_1.Resultado.Normal, laps, entrenamiento_1.TipoEntrenamiento.SUBMAX, week, 1);
     for (const [a, b] of list) {
-        entrenamiento.agregarLap(new lap_1.Lap(a, b, entrenamiento));
+        entrenamiento.agregarLap(new lap_1.Lap(a, b));
     }
     return new entrenamiento_1.Entrenamiento('', entrenamiento_1.Resultado.Normal, laps, entrenamiento_1.TipoEntrenamiento.SUBMAX, week, 1);
 }
 exports.e = e;
 function getAtleta(fechaNacimiento, aniosEntrenamiento, entrenamiento, carrera, test) {
-    let z = new atleta_1.Atleta(" ", fechaNacimiento, 62, 170, typeConfigs_1.Sexo.Hombre, aniosEntrenamiento, "", new MockGenerator());
+    let z = new atleta_1.Atleta(" ", fechaNacimiento, 62, 170, typeConfigs_1.Sexo.Hombre, aniosEntrenamiento, "");
     z.agregarEntrenamiento(entrenamiento);
     z.agregarCarrera(carrera);
     z.agregarTest(test);
@@ -49,7 +52,7 @@ describe.each(atletas)('Testing atleta', (data) => {
         expect(data.atleta.getDistanciaSemanal()).toBe(data.distanciaSemanal);
     });
     it('Testing anios entrenando', () => {
-        expect(data.atleta.getAniosEntrenamiento()).toBe(data.aniosEntrenando);
+        expect(data.atleta.getAniosEntrenando()).toBe(data.aniosEntrenando);
     });
 });
 //# sourceMappingURL=atleta.test.js.map

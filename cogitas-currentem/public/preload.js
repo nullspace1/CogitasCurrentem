@@ -4,17 +4,21 @@ const ipc = {
   'render': {
       // From render to main.
       'send': [
-          'setObjectList'
+          'saveAtleta','getAllAtletas','deleteAtleta'
       ],
       // From main to render.
       'receive': [
-          'getObjectList'
+        'saveAtleta','getAtleta','getAllAtletas'
       ]
   }
 };
 
 contextBridge.exposeInMainWorld('electron', {
-  setObjectList: (objects,string) => {ipcRenderer.invoke('setObjectList',objects,string)},
-  getObjectList: (string) =>
-    ipcRenderer.invoke('getObjectList',string),
+
+  saveAtleta :  (atleta) => ipcRenderer.invoke('saveAtleta',atleta),
+  getAllAtletas :  () => ipcRenderer.invoke('getAllAtletas'),
+  deleteAtleta : (atleta ) => {ipcRenderer.invoke('deleteAtleta',atleta)},
+  getAtleta : (id) => ipcRenderer.invoke('getAtleta',id)
+
 });
+

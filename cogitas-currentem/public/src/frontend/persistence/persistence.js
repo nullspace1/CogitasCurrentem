@@ -5,6 +5,7 @@ const class_transformer_1 = require("class-transformer");
 const atleta_1 = require("../../electron/model/atleta");
 const entrenamiento_1 = require("../../electron/model/entrenamiento");
 const anio_1 = require("../../electron/model/anio");
+const dates_1 = require("../../electron/dates");
 var Tables;
 (function (Tables) {
     Tables[Tables["atleta"] = 0] = "atleta";
@@ -16,46 +17,38 @@ exports.TableClasses = {
     'entrenamientos': entrenamiento_1.Entrenamiento,
     'macrociclo': anio_1.Anio
 };
+const dependencies = {
+    'atleta': { dateGenerator: new dates_1.DefaultDateGenerator() },
+    'entrenamientos': {},
+    'macrociclo': {}
+};
 class DatabaseInterface {
     databaseName;
     constructor(databaseName) {
-        this.databaseName = Tables[databaseName].toString();
+        this.databaseName = databaseName;
     }
     async getAll() {
-        const objects = await window.electron.getObjectList(this.databaseName);
-        return objects.map(o => (0, class_transformer_1.plainToClass)(exports.TableClasses[this.databaseName], o));
+        const objects = await window.electron.getAll(Tables[this.databaseName]);
+        const list = objects.map(o => (0, class_transformer_1.plainToInstance)(exports.TableClasses[Tables[this.databaseName]], o));
+        list.forEach(o => o.init(dependencies[Tables[this.databaseName]]));
+        return list;
     }
-    async setObjects(objects) {
-        let objs = objects.map(object => (0, class_transformer_1.instanceToPlain)(object));
-        window.electron.setObjectList(objs, this.databaseName);
+    async saveAll(objects) {
+        objects.forEach(o => { o.init(dependencies[Tables[this.databaseName]]); this.save(o); });
     }
-    async add(object) {
-        const objects = await this.getAll();
-        objects.push(object);
-        this.setObjects(objects);
-    }
-    async replace(old, replacement) {
-        const objects = await this.getAll();
-        var filteredObjects = objects.filter(a => a.id !== old.id);
-        replacement.id = old.id;
-        filteredObjects.push(replacement);
-        await this.setObjects(filteredObjects);
+    async save(object) {
+        const result = await window.electron.save((0, class_transformer_1.instanceToPlain)(object), Tables[this.databaseName]);
+        const returnedObject = (0, class_transformer_1.plainToInstance)(exports.TableClasses[Tables[this.databaseName]], result);
+        return returnedObject;
     }
     async delete(object) {
-        const originalObjects = await this.getAll();
-        var filteredObjects = originalObjects.filter(a => a.id !== object.id);
-        await this.setObjects(filteredObjects);
-        return filteredObjects;
+        await window.electron.delete((0, class_transformer_1.instanceToPlain)(object), Tables[this.databaseName]);
     }
-    async getById(id) {
-        const objects = await this.getAll();
-        return objects.filter(o => o.id === id)[0];
-    }
-    async update(object) {
-        let list = await this.getAll();
-        let newlist = list.filter(o => o.id !== object.id);
-        newlist.push(object);
-        this.setObjects(newlist);
+    async get(id) {
+        let object = await window.electron.get(id, Tables[this.databaseName]);
+        let instance = (0, class_transformer_1.plainToInstance)(exports.TableClasses[Tables[this.databaseName]], object);
+        instance.init(dependencies[Tables[this.databaseName]]);
+        return instance;
     }
 }
 exports.DatabaseInterface = DatabaseInterface;

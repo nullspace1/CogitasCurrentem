@@ -1,18 +1,17 @@
 import "reflect-metadata";
 import { Database, verbose } from 'sqlite3';
-import { classToPlain, plainToClass, plainToInstance } from 'class-transformer'
+import {  instanceToPlain,  plainToInstance } from 'class-transformer'
 import { BrowserWindow, ipcMain } from 'electron';
-import ElectronStore from 'electron-store';
 import path from 'path'
-import { TableClasses, Tables } from './src/frontend/persistence/persistence';
 import { Atleta } from './src/electron/model/atleta';
 import { Entrenamiento } from './src/electron/model/entrenamiento';
 import { Lap } from './src/electron/model/lap';
-import { Resultado, TipoEntrenamiento, Sexo } from './src/electron/typeConfigs';
 import { Anio, Grupo } from "./src/electron/model/anio";
-import { DataSource, ObjectLiteral, createConnection } from "typeorm";
-import { Persistable } from "./src/frontend/persistence/persistable";
 import { MicroCiclo } from "./src/electron/model/microciclo";
+import Knex from 'knex';
+import { AtletaRepository } from "./src/electron/persistence/AtletaRepository";
+import { EntrenamientoRepository } from "./src/electron/persistence/EntrenamientoRepository";
+import { AnioRepository } from "./src/electron/persistence/AnioRepository";
 
 export default class Main {
     static mainWindow: Electron.BrowserWindow;
@@ -53,32 +52,39 @@ export default class Main {
     }
 }
 
-
-
-
 async function setStorageHandlers() {
 
-    const connection = await new DataSource({
-        type: "sqlite",
-        database: ":memory:",
-        entities: [Atleta,Anio,MicroCiclo,Grupo,Entrenamiento,Lap],
-        synchronize: true,
-    }).initialize();
+    const knex = Knex({
+        client: 'sqlite3',
+        connection: {
+        filename: './data.db',
+        },
+     useNullAsDefault: true,
+    })
+
+    if (!(await knex.schema.hasTable('Atleta'))) {
+        await knex.schema.createTable('Atleta', table => {
+            table.increments('id').primary().unsigned();
+            table.string('nombre');
+            table.string('objetivos');
+            table.string('sexo');
+            table.float('altura');
+            table.integer('peso');
+            table.integer('anioComienzoEntrenamiento');
+            table.date('fechaNacimiento');
+        });
+    }
 
 
-    ipcMain.handle('getObjectList', async (event, tableName: Tables) => {
-        const results = await connection.getRepository(TableClasses[tableName]).find()
-        return results;
-    });
+    const entrenamientoRepository = new EntrenamientoRepository(knex)
+    const anioRepository = new AnioRepository(knex)
+    const atletaRepository = new AtletaRepository(knex,entrenamientoRepository,anioRepository)
 
-    ipcMain.handle('setObjectList', async (event, objectList : ObjectLiteral[], tableName: Tables) => {
-        const repository = connection.getRepository(TableClasses[tableName]);
-        repository.clear()
-        const objects = objectList.map(o => plainToInstance(TableClasses[tableName],o))
-        for (const element of objects) {
-            await repository.insert(element);
-        }
-
-    });
+    ipcMain.handle('saveAtleta', async (event,atleta) => {
+        return await atletaRepository.save(plainToInstance(Atleta,atleta))
+    })
+    ipcMain.handle('getAtleta', async (event,id) => await atletaRepository.get(id))
+    ipcMain.handle('getAllAtletas', async (event) => await atletaRepository.getAll())
+    ipcMain.handle('deleteAtleta', async (event,atleta) => await atletaRepository.delete(atleta))
 
 }

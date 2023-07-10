@@ -1,81 +1,59 @@
-import { Exclude, Type } from "class-transformer"
-import { Persistable } from "../../frontend/persistence/persistable"
+import { Type } from "class-transformer"
 import { DateGenerator, DefaultDateGenerator } from "../dates"
 import { Pace, Peso, Sexo, Velocidad } from "../typeConfigs"
 import { Entrenamiento } from "./entrenamiento"
 import { Anio } from "./anio"
-import { BeforeInsert, Column, Entity,  ManyToMany, OneToMany } from "typeorm"
+import { Persistable } from "../persistence/persistence"
 
-@Entity()
+
 class Atleta extends Persistable {
 
-    @Column({type: "real"})
-    private altura: number
+    nombre: string
+    objetivos: string
+    peso: Peso
+    sexo: Sexo
+    altura: number
+    anioComienzoEntrenamiento: number
 
-    @Column({type:"real"})
-    private aniosEntrenamiento: number
-
-
-    @Type(() => Entrenamiento)
-    @OneToMany(() => Entrenamiento,entrenamiento => entrenamiento.atleta)
-    private carreras: Entrenamiento[]
-
-    @Type(() => Entrenamiento)
-    @OneToMany(() => Entrenamiento, entrenamiento => entrenamiento.atleta)
-    private entrenamientos: Entrenamiento[]
 
     @Type(() => Date)
-    @Column({type:"date"})
-    private fechaNacimiento: Date
+    fechaNacimiento: Date
+
+
+    @Type(() => Entrenamiento)
+    carreras: Entrenamiento[]
+
+
+    @Type(() => Entrenamiento)
+    entrenamientos: Entrenamiento[]
+
+    @Type(() => Entrenamiento)
+    tests: Entrenamiento[]
+
 
     @Type(() =>Anio)
-    @ManyToMany(()=>Anio)
-    private macroCiclos: Anio[]
+    macroCiclos: Anio[]
 
-    @Column({type:"text"})
-    private nombre: string
+    @Type(() => DefaultDateGenerator)
+    dateGenerator : DefaultDateGenerator
 
-    @Column({type:'text'})
-    private objetivos: string
-
-    @Column({type:'real'})
-    private peso: Peso
-
-    @Column({type:'simple-enum'})
-    private sexo: Sexo
-
-    @Type(() => Entrenamiento)
-    @OneToMany(() => Entrenamiento, entrenamiento => entrenamiento.atleta)
-    private tests: Entrenamiento[]
-
-    @Exclude()
-    private dateGenerator: DateGenerator
-
-    @Type(() => Entrenamiento)
-    @Column({type: 'date'})
-    private creationDate : Date
-
-
-    init(){
-       this.macroCiclos = this.macroCiclos === undefined ? [] : this.macroCiclos
-       this.tests = this.tests === undefined ? [] : this.tests
-       this.entrenamientos = this.entrenamientos === undefined ? [] : this.entrenamientos
-       this.carreras = this.carreras === undefined ? [] : this.carreras
-    }
 
 
     constructor(nombre: string, fechaNacimiento: Date, peso: Peso, altura: number,
-        sexo: Sexo, aniosEntrenamiento: number, objetivos: string, dateGenerator?: DateGenerator) {
+        sexo: Sexo, anioComienzoEntrenamiento: number, objetivos: string, dateGenerator? : DefaultDateGenerator) {
         super()
         this.nombre = nombre
         this.fechaNacimiento = fechaNacimiento
         this.altura = altura
         this.sexo = sexo
-        this.aniosEntrenamiento = aniosEntrenamiento
+        this.anioComienzoEntrenamiento = anioComienzoEntrenamiento
         this.peso = peso
         this.objetivos = objetivos
-        this.dateGenerator = dateGenerator === undefined ? new DefaultDateGenerator() : dateGenerator
-        this.creationDate = (new Date())
+        this.dateGenerator = dateGenerator
+        this.carreras = []
+        this.entrenamientos = []
+        this.tests = []
+        this.macroCiclos = []
     }
 
 
@@ -121,59 +99,13 @@ class Atleta extends Persistable {
         this.entrenamientos.push(nuevoEntrenamiento)
     }
 
-    private getAniosEntrenando() {
-        const crDate: number = this.creationDate.valueOf()
-        return new Date(this.dateGenerator.getHoy() - crDate).getFullYear() - 1970 + 1
+    public getAniosEntrenando() {
+       return this.dateGenerator.getAnioActual() - this.anioComienzoEntrenamiento
     }
 
-    public getAniosEntrenamiento() {
-        return this.aniosEntrenamiento + this.getAniosEntrenando()
+    public getEdad(){
+        return this.dateGenerator.getAnioActual() - this.fechaNacimiento.getFullYear()
     }
-
-    public getEdad() {
-        return new Date(this.dateGenerator.getHoy() - this.fechaNacimiento.valueOf()).getFullYear() - 1970
-    }
-
-    public getAltura(): number {
-        return this.altura
-    }
-
-    public getNombre(): string {
-        return this.nombre
-    }
-
-    public getObjetivos(): string {
-        return this.objetivos
-    }
-
-    public getPeso(): Peso {
-        return this.peso
-    }
-
-    public getSexo(): Sexo {
-        return this.sexo
-    }
-
-    public getEntrenamientos() {
-        return this.entrenamientos
-    }
-
-    public getCarreras() {
-        return this.carreras
-    }
-
-    public getTests() {
-        return this.tests
-    }
-
-    public getMacroCiclos(){
-        return this.macroCiclos
-    }
-
-    public getFechaNacimiento(){
-        return this.fechaNacimiento
-    }
-
 
 
 }

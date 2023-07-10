@@ -14,6 +14,10 @@ class MockGenerator implements DateGenerator{
        return 1
     }
 
+    getAnioActual(): number {
+        return 2023
+    }
+
     getHoy(): number{
         return Date.now() + 1000 * 60 * 60 * 24 * 370 * 2
     }
@@ -25,13 +29,13 @@ export function e(list : number[][], week){
     const laps : Lap[] = []
     const entrenamiento = new Entrenamiento('',Resultado.Normal,laps,TipoEntrenamiento.SUBMAX,week,1)
     for (const [a,b] of list){
-        entrenamiento.agregarLap(new Lap(a,b,entrenamiento))
+        entrenamiento.agregarLap(new Lap(a,b))
     }
     return new Entrenamiento('',Resultado.Normal,laps,TipoEntrenamiento.SUBMAX,week,1)
 }
 
 export function getAtleta(fechaNacimiento, aniosEntrenamiento,entrenamiento, carrera,test){
-    let z = new Atleta(" ",fechaNacimiento,62, 170, Sexo.Hombre,aniosEntrenamiento,"", new MockGenerator())
+    let z = new Atleta(" ",fechaNacimiento,62, 170, Sexo.Hombre,aniosEntrenamiento,"")
     z.agregarEntrenamiento(entrenamiento)
     z.agregarCarrera(carrera)
     z.agregarTest(test)
@@ -59,7 +63,7 @@ describe.each(atletas)(
             expect(data.atleta.getDistanciaSemanal()).toBe(data.distanciaSemanal)
         })
         it('Testing anios entrenando', () => {
-            expect(data.atleta.getAniosEntrenamiento()).toBe(data.aniosEntrenando)
+            expect(data.atleta.getAniosEntrenando()).toBe(data.aniosEntrenando)
         })
     }
 )

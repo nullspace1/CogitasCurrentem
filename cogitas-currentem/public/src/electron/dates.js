@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DefaultDateGenerator = void 0;
+exports.DefaultDateGenerator = exports.DateGenerator = void 0;
+class DateGenerator {
+}
+exports.DateGenerator = DateGenerator;
 class DefaultDateGenerator {
     getSemana() {
         const date = new Date();
@@ -19,6 +22,9 @@ class DefaultDateGenerator {
     }
     getHoy() {
         return Date.now();
+    }
+    getAnioActual() {
+        return new Date().getFullYear();
     }
 }
 exports.DefaultDateGenerator = DefaultDateGenerator;

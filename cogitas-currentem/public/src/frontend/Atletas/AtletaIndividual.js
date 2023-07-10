@@ -26,16 +26,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntrenamientosList = exports.AtletaPag = void 0;
 const react_1 = __importStar(require("react"));
 const react_router_dom_1 = require("react-router-dom");
-const persistence_1 = require("../persistence/persistence");
 const typeConfigs_1 = require("../../electron/typeConfigs");
 const anio_1 = require("../../electron/model/anio");
 const UnitSelector_1 = require("./UnitSelector");
+const PersistenceConnection_1 = require("../PersistenceConnection");
 const AtletaPag = () => {
     const { id } = (0, react_router_dom_1.useParams)();
     const [atletaInfo, setAtletaInfo] = (0, react_1.useState)(null);
     (0, react_1.useLayoutEffect)(() => {
         const fetch = async () => {
-            const atleta = await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).getById(id);
+            const atleta = await new PersistenceConnection_1.DatabaseConnection().getAtleta(parseInt(id));
             setAtletaInfo(atleta);
         };
         fetch();
@@ -44,7 +44,7 @@ const AtletaPag = () => {
         return (react_1.default.createElement("div", null));
     return (react_1.default.createElement("div", null,
         react_1.default.createElement("h1", null,
-            atletaInfo.getNombre(),
+            atletaInfo.nombre,
             " "),
         react_1.default.createElement("div", null,
             " ",
@@ -53,20 +53,20 @@ const AtletaPag = () => {
         react_1.default.createElement("div", null,
             react_1.default.createElement(InformacionPersonal, { atleta: atletaInfo }),
             react_1.default.createElement(InformacionAtleta, { atleta: atletaInfo }),
-            react_1.default.createElement(EntrenamientosList, { list: atletaInfo.getEntrenamientos(), nombre: "Entrenamientos realizados" }),
-            react_1.default.createElement(EntrenamientosList, { list: atletaInfo.getCarreras(), nombre: "Carreras participadas" }),
-            react_1.default.createElement(EntrenamientosList, { list: atletaInfo.getTests(), nombre: "Tests realizados" }),
+            react_1.default.createElement(EntrenamientosList, { list: atletaInfo.entrenamientos, nombre: "Entrenamientos realizados" }),
+            react_1.default.createElement(EntrenamientosList, { list: atletaInfo.carreras, nombre: "Carreras participadas" }),
+            react_1.default.createElement(EntrenamientosList, { list: atletaInfo.tests, nombre: "Tests realizados" }),
             react_1.default.createElement(MacroCiclo, { atleta: atletaInfo }))));
 };
 exports.AtletaPag = AtletaPag;
 function MacroCiclo({ atleta }) {
-    const [macrociclo, setMacrociclo] = (0, react_1.useState)(atleta.getMacroCiclos());
+    const [macrociclo, setMacrociclo] = (0, react_1.useState)(atleta.macroCiclos);
     const navigate = (0, react_router_dom_1.useNavigate)();
     const crearMacrociclo = async () => {
         const anio = new anio_1.Anio((new Date().getFullYear()));
         atleta.agregarMacroCiclo(anio);
-        await new persistence_1.DatabaseInterface(persistence_1.Tables.macrociclo).add(anio);
-        await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).update(atleta);
+        // await new DatabaseInterface(Tables.macrociclo).save(anio);
+        //await new DatabaseInterface(Tables.atleta).save(atleta);
         navigate('./macrociclo/' + anio.id);
     };
     return (react_1.default.createElement("div", null,
@@ -88,14 +88,14 @@ function InformacionPersonal({ atleta }) {
                 " "),
             react_1.default.createElement("li", null,
                 "Peso: ",
-                react_1.default.createElement(UnitSelector_1.UnitSelector, { value: atleta.getPeso(), converter: new typeConfigs_1.WeightConverter() })),
+                react_1.default.createElement(UnitSelector_1.UnitSelector, { value: atleta.peso, converter: new typeConfigs_1.WeightConverter() })),
             react_1.default.createElement("li", null,
                 "Altura: ",
-                react_1.default.createElement(UnitSelector_1.UnitSelector, { value: atleta.getAltura(), converter: new typeConfigs_1.DistanceConverter() }),
+                react_1.default.createElement(UnitSelector_1.UnitSelector, { value: atleta.altura, converter: new typeConfigs_1.DistanceConverter() }),
                 " "),
             react_1.default.createElement("li", null,
                 "Sexo: ",
-                atleta.getSexo().toString()))));
+                atleta.sexo.toString()))));
 }
 function InformacionAtleta({ atleta }) {
     return (react_1.default.createElement("div", null,
@@ -103,10 +103,10 @@ function InformacionAtleta({ atleta }) {
         react_1.default.createElement("ul", null,
             react_1.default.createElement("li", null,
                 "A\u00F1os de entrenamiento: ",
-                atleta.getAniosEntrenamiento()),
+                atleta.getAniosEntrenando()),
             react_1.default.createElement("li", null,
                 "Objetivo Actual: ",
-                atleta.getObjetivos()),
+                atleta.objetivos),
             react_1.default.createElement("li", null,
                 "Distancia Semanal: ",
                 react_1.default.createElement(UnitSelector_1.UnitSelector, { value: atleta.getDistanciaSemanal(), converter: new typeConfigs_1.DistanceConverter() })),

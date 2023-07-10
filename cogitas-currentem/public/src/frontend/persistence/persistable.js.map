@@ -1,1 +1,1 @@
-{"version":3,"file":"persistable.js","sourceRoot":"","sources":["../../../../src/frontend/persistence/persistable.ts"],"names":[],"mappings":";;;;;;;;;;;;AACA,qCAAiD;AAKjD,MAAsB,WAAW;IAG7B,EAAE,CAAS;CAEd;AAFG;IADC,IAAA,gCAAsB,EAAC,MAAM,CAAC;;uCACpB;AAHf,kCAKC"}
+{"version":3,"file":"persistable.js","sourceRoot":"","sources":["../../../../src/frontend/persistence/persistable.ts"],"names":[],"mappings":";;;;;;;;;;;;AACA,qCAAiD;AAKjD,MAAsB,WAAW;IAG7B,EAAE,CAAS;CAId;AAJG;IADC,IAAA,gCAAsB,EAAC,MAAM,CAAC;;uCACpB;AAHf,kCAOC"}

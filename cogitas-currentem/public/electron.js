@@ -7,13 +7,11 @@ require("reflect-metadata");
 const class_transformer_1 = require("class-transformer");
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
-const persistence_1 = require("./src/frontend/persistence/persistence");
 const atleta_1 = require("./src/electron/model/atleta");
-const entrenamiento_1 = require("./src/electron/model/entrenamiento");
-const lap_1 = require("./src/electron/model/lap");
-const anio_1 = require("./src/electron/model/anio");
-const typeorm_1 = require("typeorm");
-const microciclo_1 = require("./src/electron/model/microciclo");
+const knex_1 = __importDefault(require("knex"));
+const AtletaRepository_1 = require("./src/electron/persistence/AtletaRepository");
+const EntrenamientoRepository_1 = require("./src/electron/persistence/EntrenamientoRepository");
+const AnioRepository_1 = require("./src/electron/persistence/AnioRepository");
 class Main {
     static mainWindow;
     static application;
@@ -50,23 +48,33 @@ class Main {
 }
 exports.default = Main;
 async function setStorageHandlers() {
-    const connection = await new typeorm_1.DataSource({
-        type: "sqlite",
-        database: ":memory:",
-        entities: [atleta_1.Atleta, anio_1.Anio, microciclo_1.MicroCiclo, anio_1.Grupo, entrenamiento_1.Entrenamiento, lap_1.Lap],
-        synchronize: true,
-    }).initialize();
-    electron_1.ipcMain.handle('getObjectList', async (event, tableName) => {
-        const results = await connection.getRepository(persistence_1.TableClasses[tableName]).find();
-        return results;
+    const knex = (0, knex_1.default)({
+        client: 'sqlite3',
+        connection: {
+            filename: './data.db',
+        },
+        useNullAsDefault: true,
     });
-    electron_1.ipcMain.handle('setObjectList', async (event, objectList, tableName) => {
-        const repository = connection.getRepository(persistence_1.TableClasses[tableName]);
-        repository.clear();
-        const objects = objectList.map(o => (0, class_transformer_1.plainToInstance)(persistence_1.TableClasses[tableName], o));
-        for (const element of objects) {
-            await repository.insert(element);
-        }
+    if (!(await knex.schema.hasTable('Atleta'))) {
+        await knex.schema.createTable('Atleta', table => {
+            table.increments('id').primary().unsigned();
+            table.string('nombre');
+            table.string('objetivos');
+            table.string('sexo');
+            table.float('altura');
+            table.integer('peso');
+            table.integer('anioComienzoEntrenamiento');
+            table.date('fechaNacimiento');
+        });
+    }
+    const entrenamientoRepository = new EntrenamientoRepository_1.EntrenamientoRepository(knex);
+    const anioRepository = new AnioRepository_1.AnioRepository(knex);
+    const atletaRepository = new AtletaRepository_1.AtletaRepository(knex, entrenamientoRepository, anioRepository);
+    electron_1.ipcMain.handle('saveAtleta', async (event, atleta) => {
+        return await atletaRepository.save((0, class_transformer_1.plainToInstance)(atleta_1.Atleta, atleta));
     });
+    electron_1.ipcMain.handle('getAtleta', async (event, id) => await atletaRepository.get(id));
+    electron_1.ipcMain.handle('getAllAtletas', async (event) => await atletaRepository.getAll());
+    electron_1.ipcMain.handle('deleteAtleta', async (event, atleta) => await atletaRepository.delete(atleta));
 }
 //# sourceMappingURL=electron.js.map

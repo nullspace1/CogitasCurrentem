@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Atleta } from "../../electron/model/atleta";
-import { Link, useParams } from "react-router-dom";
-import { DatabaseInterface, Tables } from "../persistence/persistence";
+import { Link} from "react-router-dom";
+import { DatabaseConnection } from "../PersistenceConnection";
 
 
 
@@ -15,9 +15,11 @@ export const Atletas = () => {
 
   useEffect(() => {
     const getAll = async () => {
-      const all = await new DatabaseInterface(Tables.atleta).getAll()
+      const all = await new DatabaseConnection().getAllAtletas()
       setAtletas(all as Atleta[])
+      setAtletasFiltrados(all as Atleta[])
     }
+
     getAll();
   }, []);
 
@@ -28,13 +30,14 @@ export const Atletas = () => {
   const handleSearch = (e) => {
     e.preventDefault()
     setSearch(e.target.value);
-    if (e.target.value === 0) setAtletasFiltrados(atletas); else setAtletasFiltrados(atletas.filter(a => a.getNombre().toLowerCase().includes(e.target.value.toLowerCase())))
+    if (e.target.value === 0) setAtletasFiltrados(atletas); else setAtletasFiltrados(atletas.filter(a => a.nombre.toLowerCase().includes(e.target.value.toLowerCase())))
   }
 
   const borrarAtleta = async (atleta: Atleta) => {
-    const newAtletas = await new DatabaseInterface(Tables.atleta).delete(atleta)
-    setAtletas(newAtletas as Atleta[])
-    setAtletasFiltrados(newAtletas as Atleta[])
+    await new DatabaseConnection().deleteAtleta(atleta)
+    let atletas = await new DatabaseConnection().getAllAtletas()
+    setAtletas(atletas as Atleta[])
+    setAtletasFiltrados(atletas as Atleta[])
   }
 
   return (
@@ -43,14 +46,14 @@ export const Atletas = () => {
       <p> Aca podes visualizar a todos los atletas cargados en el sistema.</p>
       <div>
         <div>
-          <input placeholder="Buscar..." type="Text" onChange={handleSearch} value={searchInput} defaultValue={""} />
+          <input placeholder="Buscar..." type="Text" onChange={handleSearch} value={searchInput}  />
           <Link to={"./nuevo"}> Nuevo Atleta </Link>
         </div>
         <div>
           <ul>
             {atletasFiltrados.map((a, index) =>
               <li key={index}>
-                <div>{a.getNombre()}</div>
+                <div>{a.nombre}</div>
                 <Link  to={"./" + a.id}> Ver </Link>
                 <button onClick={() => borrarAtleta(a)}>Eliminar</button>
               </li>)}

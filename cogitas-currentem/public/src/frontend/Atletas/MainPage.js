@@ -26,15 +26,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Atletas = void 0;
 const react_1 = __importStar(require("react"));
 const react_router_dom_1 = require("react-router-dom");
-const persistence_1 = require("../persistence/persistence");
+const PersistenceConnection_1 = require("../PersistenceConnection");
 const Atletas = () => {
     const [atletas, setAtletas] = (0, react_1.useState)([]);
     const [atletasFiltrados, setAtletasFiltrados] = (0, react_1.useState)([]);
     const [searchInput, setSearch] = (0, react_1.useState)("");
     (0, react_1.useEffect)(() => {
         const getAll = async () => {
-            const all = await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).getAll();
+            const all = await new PersistenceConnection_1.DatabaseConnection().getAllAtletas();
             setAtletas(all);
+            setAtletasFiltrados(all);
         };
         getAll();
     }, []);
@@ -47,23 +48,24 @@ const Atletas = () => {
         if (e.target.value === 0)
             setAtletasFiltrados(atletas);
         else
-            setAtletasFiltrados(atletas.filter(a => a.getNombre().toLowerCase().includes(e.target.value.toLowerCase())));
+            setAtletasFiltrados(atletas.filter(a => a.nombre.toLowerCase().includes(e.target.value.toLowerCase())));
     };
     const borrarAtleta = async (atleta) => {
-        const newAtletas = await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).delete(atleta);
-        setAtletas(newAtletas);
-        setAtletasFiltrados(newAtletas);
+        await new PersistenceConnection_1.DatabaseConnection().deleteAtleta(atleta);
+        let atletas = await new PersistenceConnection_1.DatabaseConnection().getAllAtletas();
+        setAtletas(atletas);
+        setAtletasFiltrados(atletas);
     };
     return (react_1.default.createElement("div", null,
         react_1.default.createElement("h1", null, " Listado de Atletas"),
         react_1.default.createElement("p", null, " Aca podes visualizar a todos los atletas cargados en el sistema."),
         react_1.default.createElement("div", null,
             react_1.default.createElement("div", null,
-                react_1.default.createElement("input", { placeholder: "Buscar...", type: "Text", onChange: handleSearch, value: searchInput, defaultValue: "" }),
+                react_1.default.createElement("input", { placeholder: "Buscar...", type: "Text", onChange: handleSearch, value: searchInput }),
                 react_1.default.createElement(react_router_dom_1.Link, { to: "./nuevo" }, " Nuevo Atleta ")),
             react_1.default.createElement("div", null,
                 react_1.default.createElement("ul", null, atletasFiltrados.map((a, index) => react_1.default.createElement("li", { key: index },
-                    react_1.default.createElement("div", null, a.getNombre()),
+                    react_1.default.createElement("div", null, a.nombre),
                     react_1.default.createElement(react_router_dom_1.Link, { to: "./" + a.id }, " Ver "),
                     react_1.default.createElement("button", { onClick: () => borrarAtleta(a) }, "Eliminar"))))))));
 };

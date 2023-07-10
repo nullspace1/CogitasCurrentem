@@ -26,62 +26,65 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AtletaForm = void 0;
 const react_1 = __importStar(require("react"));
 const atleta_1 = require("../../electron/model/atleta");
-const persistence_1 = require("../persistence/persistence");
+const react_router_dom_1 = require("react-router-dom");
+const PersistenceConnection_1 = require("../PersistenceConnection");
 function AtletaForm({ id }) {
     const [atletaData, setData] = (0, react_1.useState)({
         nombre: "",
         fechaNacimiento: "",
         altura: 0,
         sexo: atleta_1.Sexo.Hombre,
-        aniosEntrenamiento: 0,
+        anioComienzoEntrenamiento: 2023,
         peso: 0,
         objetivos: ""
     });
-    const [notEdited, setEdited] = (0, react_1.useState)(true);
+    const [atleta, setAtleta] = (0, react_1.useState)(null);
+    const nav = (0, react_router_dom_1.useNavigate)();
     (0, react_1.useEffect)(() => {
-        if (notEdited) {
-            const getAtletaExistente = async (id) => {
-                const atleta = await new persistence_1.DatabaseInterface(persistence_1.Tables.atleta).getById(id);
-                if (id !== "") {
-                    setData({
-                        nombre: atleta.getNombre(),
-                        fechaNacimiento: atleta.getFechaNacimiento().toISOString().split('T')[0],
-                        altura: atleta.getAltura(),
-                        sexo: atleta.getSexo(),
-                        aniosEntrenamiento: atleta.getAniosEntrenamiento(),
-                        peso: atleta.getPeso(),
-                        objetivos: atleta.getObjetivos()
-                    });
-                }
-            };
-            getAtletaExistente(id);
-            setEdited(false);
-        }
-    }, [atletaData]);
+        const getAtleta = async () => {
+            if (id != "") {
+                const atleta = (await new PersistenceConnection_1.DatabaseConnection().getAtleta(parseInt(id)));
+                setAtleta(atleta);
+                setData({
+                    nombre: atleta.nombre,
+                    fechaNacimiento: atleta.fechaNacimiento.toISOString().split('T')[0],
+                    altura: atleta.altura,
+                    sexo: atleta.sexo,
+                    anioComienzoEntrenamiento: atleta.anioComienzoEntrenamiento,
+                    peso: atleta.peso,
+                    objetivos: atleta.objetivos
+                });
+            }
+        };
+        getAtleta();
+    }, []);
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
         const type = event.target.type;
         setData(prevData => ({ ...prevData, [name]: type === "number" ? parseInt(value, 10) : value }));
     };
-    const transferirEntrenamientos = (atletaViejo, atletaNuevo) => {
-        atletaViejo.getEntrenamientos().forEach(e => { atletaNuevo.agregarEntrenamiento(e); });
-        atletaViejo.getCarreras().forEach(e => atletaNuevo.agregarCarrera(e));
-        atletaViejo.getTests().forEach(e => atletaNuevo.agregarTest(e));
-    };
     const crearAtleta = async () => {
-        const db = new persistence_1.DatabaseInterface(persistence_1.Tables.atleta);
-        var atleta = new atleta_1.Atleta(atletaData.nombre, new Date(atletaData.fechaNacimiento), atletaData.peso, atletaData.altura, atletaData.sexo, atletaData.aniosEntrenamiento, atletaData.objetivos);
-        if (id !== "") {
-            const atletaViejo = await db.getById(id);
-            transferirEntrenamientos(atletaViejo, atleta);
-            await db.replace(atletaViejo, atleta);
+        if (atleta !== null) {
+            atleta.nombre = atletaData.nombre;
+            atleta.fechaNacimiento = new Date(atletaData.fechaNacimiento);
+            atleta.altura = atletaData.altura;
+            atleta.sexo = atletaData.sexo;
+            atleta.anioComienzoEntrenamiento = atletaData.anioComienzoEntrenamiento;
+            atleta.peso = atletaData.peso;
+            atleta.objetivos = atletaData.objetivos;
+            const object = await new PersistenceConnection_1.DatabaseConnection().saveAtleta(atleta);
+            const id = object.id;
+            nav('/atleta/' + id);
         }
         else {
-            await db.add(atleta);
+            const newAtleta = new atleta_1.Atleta(atletaData.nombre, new Date(Date.parse(atletaData.fechaNacimiento)), atletaData.peso, atletaData.altura, atletaData.sexo, atletaData.anioComienzoEntrenamiento, atletaData.objetivos);
+            const object = await new PersistenceConnection_1.DatabaseConnection().saveAtleta(newAtleta);
+            const id = object.id;
+            nav('/atleta/' + id);
         }
     };
-    return (react_1.default.createElement("form", { onSubmit: crearAtleta },
+    return (react_1.default.createElement("form", { onSubmit: async (event) => { event.preventDefault(); await crearAtleta(); } },
         react_1.default.createElement("h2", null, " Datos Fisicos "),
         react_1.default.createElement("label", { htmlFor: "nombre" }, "Nombre"),
         react_1.default.createElement("input", { onChange: handleChange, type: "text", id: "nombre", name: "nombre", value: atletaData.nombre }),
@@ -96,8 +99,8 @@ function AtletaForm({ id }) {
         react_1.default.createElement("label", { htmlFor: "peso" }, " Peso (en kg) "),
         react_1.default.createElement("input", { onChange: handleChange, type: "number", name: "peso", value: atletaData.peso }),
         react_1.default.createElement("h2", null, " Sobre Atletismo"),
-        react_1.default.createElement("label", { htmlFor: "aniosEntrenamiento" }, "A\u00F1os de Entrenamiento"),
-        react_1.default.createElement("input", { onChange: handleChange, type: "number", min: 0, name: "aniosEntrenamiento", value: atletaData.aniosEntrenamiento }),
+        react_1.default.createElement("label", { htmlFor: "anioComienzoEntrenamiento" }, "A\u00F1o comienzo de entrenamiento"),
+        react_1.default.createElement("input", { onChange: handleChange, type: "number", min: 1900, name: "anioComienzoEntrenamiento", value: atletaData.anioComienzoEntrenamiento }),
         react_1.default.createElement("label", { htmlFor: "objetivos" }, " Objetivos "),
         react_1.default.createElement("input", { onChange: handleChange, type: "text", name: "objetivos", value: atletaData.objetivos }),
         react_1.default.createElement("button", { type: "submit" }, " Cargar ")));

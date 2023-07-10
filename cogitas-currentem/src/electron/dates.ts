@@ -1,8 +1,9 @@
 import { Semana } from "./typeConfigs";
 
-export interface DateGenerator {
-    getSemana() : Semana
-    getHoy() : number
+export abstract class DateGenerator {
+    abstract getAnioActual() : number
+    abstract getSemana() : Semana
+    abstract getHoy() : number
 }
 
 export class DefaultDateGenerator implements DateGenerator {
@@ -31,5 +32,9 @@ export class DefaultDateGenerator implements DateGenerator {
 
     getHoy(){
         return Date.now()
+    }
+
+    getAnioActual(): number {
+        return new Date().getFullYear()
     }
 }

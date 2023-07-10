@@ -2,7 +2,6 @@ import React, { useLayoutEffect, useState } from 'react';
 import "../css/CrearMacrociclo.css"
 import { Anio, Grupo } from '../../electron/model/anio';
 import { Link,  useParams } from 'react-router-dom';
-import { DatabaseInterface, Tables } from '../persistence/persistence';
 import { UnitSelector } from '../Atletas/UnitSelector';
 import {  DistanceConverter } from '../../electron/typeConfigs';
 
@@ -21,7 +20,7 @@ export function AnioView() {
   const actualizarAnio = async (anioNuevo : number) => {
     usedMacrociclo.setAnio(anioNuevo)
     setAnio(anioNuevo)
-    await new DatabaseInterface(Tables.macrociclo).update(usedMacrociclo)
+   // await new DatabaseInterface(Tables.macrociclo).save(usedMacrociclo)
   }
 
   const setBound = (x : number) => {
@@ -40,7 +39,7 @@ export function AnioView() {
 
   const asignar = async () => {
     usedMacrociclo.asignarGrupoA(new Grupo(lowerBound,upperBound,groupName))
-    await new DatabaseInterface(Tables.macrociclo).update(usedMacrociclo)
+   await new DatabaseInterface(Tables.macrociclo).save(usedMacrociclo)
     setGrupos(usedMacrociclo.getGrupos())
     setLowerBound(-1)
     setUpperBound(-1)
@@ -70,9 +69,9 @@ export function AnioView() {
 
   useLayoutEffect(() => {
     const fetch = async () => {
-      const macrociclo = await new DatabaseInterface(Tables.macrociclo).getById(id) as Anio
-      setMacrociclo(macrociclo)
-      setAnio(macrociclo.getAnio())
+     const macrociclo = await new DatabaseInterface(Tables.macrociclo).get(id) as Anio
+     setMacrociclo(macrociclo)
+     setAnio(macrociclo.getAnio())
     }
     fetch()
   }, [id])

@@ -11,44 +11,39 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sexo = exports.Atleta = void 0;
 const class_transformer_1 = require("class-transformer");
-const persistable_1 = require("../../frontend/persistence/persistable");
 const dates_1 = require("../dates");
 const typeConfigs_1 = require("../typeConfigs");
 Object.defineProperty(exports, "Sexo", { enumerable: true, get: function () { return typeConfigs_1.Sexo; } });
 const entrenamiento_1 = require("./entrenamiento");
 const anio_1 = require("./anio");
-const typeorm_1 = require("typeorm");
-let Atleta = class Atleta extends persistable_1.Persistable {
-    altura;
-    aniosEntrenamiento;
-    carreras;
-    entrenamientos;
-    fechaNacimiento;
-    macroCiclos;
+const persistence_1 = require("../persistence/persistence");
+class Atleta extends persistence_1.Persistable {
     nombre;
     objetivos;
     peso;
     sexo;
+    altura;
+    anioComienzoEntrenamiento;
+    fechaNacimiento;
+    carreras;
+    entrenamientos;
     tests;
+    macroCiclos;
     dateGenerator;
-    creationDate;
-    init() {
-        this.macroCiclos = this.macroCiclos === undefined ? [] : this.macroCiclos;
-        this.tests = this.tests === undefined ? [] : this.tests;
-        this.entrenamientos = this.entrenamientos === undefined ? [] : this.entrenamientos;
-        this.carreras = this.carreras === undefined ? [] : this.carreras;
-    }
-    constructor(nombre, fechaNacimiento, peso, altura, sexo, aniosEntrenamiento, objetivos, dateGenerator) {
+    constructor(nombre, fechaNacimiento, peso, altura, sexo, anioComienzoEntrenamiento, objetivos, dateGenerator) {
         super();
         this.nombre = nombre;
         this.fechaNacimiento = fechaNacimiento;
         this.altura = altura;
         this.sexo = sexo;
-        this.aniosEntrenamiento = aniosEntrenamiento;
+        this.anioComienzoEntrenamiento = anioComienzoEntrenamiento;
         this.peso = peso;
         this.objetivos = objetivos;
-        this.dateGenerator = dateGenerator === undefined ? new dates_1.DefaultDateGenerator() : dateGenerator;
-        this.creationDate = (new Date());
+        this.dateGenerator = dateGenerator;
+        this.carreras = [];
+        this.entrenamientos = [];
+        this.tests = [];
+        this.macroCiclos = [];
     }
     getAllEntrenamientos() {
         let allEntrenamientos = [];
@@ -83,113 +78,35 @@ let Atleta = class Atleta extends persistable_1.Persistable {
         this.entrenamientos.push(nuevoEntrenamiento);
     }
     getAniosEntrenando() {
-        const crDate = this.creationDate.valueOf();
-        return new Date(this.dateGenerator.getHoy() - crDate).getFullYear() - 1970 + 1;
-    }
-    getAniosEntrenamiento() {
-        return this.aniosEntrenamiento + this.getAniosEntrenando();
+        return this.dateGenerator.getAnioActual() - this.anioComienzoEntrenamiento;
     }
     getEdad() {
-        return new Date(this.dateGenerator.getHoy() - this.fechaNacimiento.valueOf()).getFullYear() - 1970;
+        return this.dateGenerator.getAnioActual() - this.fechaNacimiento.getFullYear();
     }
-    getAltura() {
-        return this.altura;
-    }
-    getNombre() {
-        return this.nombre;
-    }
-    getObjetivos() {
-        return this.objetivos;
-    }
-    getPeso() {
-        return this.peso;
-    }
-    getSexo() {
-        return this.sexo;
-    }
-    getEntrenamientos() {
-        return this.entrenamientos;
-    }
-    getCarreras() {
-        return this.carreras;
-    }
-    getTests() {
-        return this.tests;
-    }
-    getMacroCiclos() {
-        return this.macroCiclos;
-    }
-    getFechaNacimiento() {
-        return this.fechaNacimiento;
-    }
-};
+}
 __decorate([
-    (0, typeorm_1.Column)({ type: "real" }),
-    __metadata("design:type", Number)
-], Atleta.prototype, "altura", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: "real" }),
-    __metadata("design:type", Number)
-], Atleta.prototype, "aniosEntrenamiento", void 0);
+    (0, class_transformer_1.Type)(() => Date),
+    __metadata("design:type", Date)
+], Atleta.prototype, "fechaNacimiento", void 0);
 __decorate([
     (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
-    (0, typeorm_1.OneToMany)(() => entrenamiento_1.Entrenamiento, entrenamiento => entrenamiento.atleta),
     __metadata("design:type", Array)
 ], Atleta.prototype, "carreras", void 0);
 __decorate([
     (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
-    (0, typeorm_1.OneToMany)(() => entrenamiento_1.Entrenamiento, entrenamiento => entrenamiento.atleta),
     __metadata("design:type", Array)
 ], Atleta.prototype, "entrenamientos", void 0);
 __decorate([
-    (0, class_transformer_1.Type)(() => Date),
-    (0, typeorm_1.Column)({ type: "date" }),
-    __metadata("design:type", Date)
-], Atleta.prototype, "fechaNacimiento", void 0);
-__decorate([
-    (0, class_transformer_1.Type)(() => anio_1.Anio),
-    (0, typeorm_1.ManyToMany)(() => anio_1.Anio),
-    __metadata("design:type", Array)
-], Atleta.prototype, "macroCiclos", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: "text" }),
-    __metadata("design:type", String)
-], Atleta.prototype, "nombre", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'text' }),
-    __metadata("design:type", String)
-], Atleta.prototype, "objetivos", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'real' }),
-    __metadata("design:type", Number)
-], Atleta.prototype, "peso", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'simple-enum' }),
-    __metadata("design:type", String)
-], Atleta.prototype, "sexo", void 0);
-__decorate([
     (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
-    (0, typeorm_1.OneToMany)(() => entrenamiento_1.Entrenamiento, entrenamiento => entrenamiento.atleta),
     __metadata("design:type", Array)
 ], Atleta.prototype, "tests", void 0);
 __decorate([
-    (0, class_transformer_1.Exclude)(),
-    __metadata("design:type", Object)
+    (0, class_transformer_1.Type)(() => anio_1.Anio),
+    __metadata("design:type", Array)
+], Atleta.prototype, "macroCiclos", void 0);
+__decorate([
+    (0, class_transformer_1.Type)(() => dates_1.DefaultDateGenerator),
+    __metadata("design:type", dates_1.DefaultDateGenerator)
 ], Atleta.prototype, "dateGenerator", void 0);
-__decorate([
-    (0, class_transformer_1.Type)(() => entrenamiento_1.Entrenamiento),
-    (0, typeorm_1.Column)({ type: 'date' }),
-    __metadata("design:type", Date)
-], Atleta.prototype, "creationDate", void 0);
-__decorate([
-    (0, typeorm_1.BeforeInsert)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], Atleta.prototype, "init", null);
-Atleta = __decorate([
-    (0, typeorm_1.Entity)(),
-    __metadata("design:paramtypes", [String, Date, Number, Number, String, Number, String, Object])
-], Atleta);
 exports.Atleta = Atleta;
 //# sourceMappingURL=atleta.js.map

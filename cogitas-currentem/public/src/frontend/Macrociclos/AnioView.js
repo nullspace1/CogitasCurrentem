@@ -28,7 +28,6 @@ const react_1 = __importStar(require("react"));
 require("../css/CrearMacrociclo.css");
 const anio_1 = require("../../electron/model/anio");
 const react_router_dom_1 = require("react-router-dom");
-const persistence_1 = require("../persistence/persistence");
 const UnitSelector_1 = require("../Atletas/UnitSelector");
 const typeConfigs_1 = require("../../electron/typeConfigs");
 function AnioView() {
@@ -42,7 +41,7 @@ function AnioView() {
     const actualizarAnio = async (anioNuevo) => {
         usedMacrociclo.setAnio(anioNuevo);
         setAnio(anioNuevo);
-        await new persistence_1.DatabaseInterface(persistence_1.Tables.macrociclo).update(usedMacrociclo);
+        // await new DatabaseInterface(Tables.macrociclo).save(usedMacrociclo)
     };
     const setBound = (x) => {
         if (lowerBound !== -1 && upperBound !== -1) {
@@ -62,7 +61,7 @@ function AnioView() {
     };
     const asignar = async () => {
         usedMacrociclo.asignarGrupoA(new anio_1.Grupo(lowerBound, upperBound, groupName));
-        await new persistence_1.DatabaseInterface(persistence_1.Tables.macrociclo).update(usedMacrociclo);
+        // await new DatabaseInterface(Tables.macrociclo).save(usedMacrociclo)
         setGrupos(usedMacrociclo.getGrupos());
         setLowerBound(-1);
         setUpperBound(-1);
@@ -90,9 +89,9 @@ function AnioView() {
     };
     (0, react_1.useLayoutEffect)(() => {
         const fetch = async () => {
-            const macrociclo = await new persistence_1.DatabaseInterface(persistence_1.Tables.macrociclo).getById(id);
-            setMacrociclo(macrociclo);
-            setAnio(macrociclo.getAnio());
+            // const macrociclo = await new DatabaseInterface(Tables.macrociclo).get(id) as Anio
+            // setMacrociclo(macrociclo)
+            // setAnio(macrociclo.getAnio())
         };
         fetch();
     }, [id]);

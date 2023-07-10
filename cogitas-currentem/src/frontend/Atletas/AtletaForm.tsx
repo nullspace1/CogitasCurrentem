@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Sexo, Atleta } from "../../electron/model/atleta";
-import { DatabaseInterface, Tables } from "../persistence/persistence";
+import { useNavigate } from "react-router-dom";
+import { DatabaseConnection } from "../PersistenceConnection";
 
 
 
@@ -11,36 +12,35 @@ export function AtletaForm({ id }: { id: string }) {
     fechaNacimiento: "",
     altura: 0,
     sexo: Sexo.Hombre,
-    aniosEntrenamiento: 0,
+    anioComienzoEntrenamiento: 2023,
     peso: 0,
     objetivos: ""
   });
 
-  const [notEdited, setEdited] = useState(true)
+  const [atleta, setAtleta] = useState(null as Atleta)
+
+  const nav = useNavigate()
 
 
   useEffect(() => {
-    if (notEdited) {
-      const getAtletaExistente = async (id) => {
-        const atleta = await new DatabaseInterface(Tables.atleta).getById(id) as Atleta
-        if (id !== "") {
-          setData({
-            nombre: atleta.getNombre(),
-            fechaNacimiento: atleta.getFechaNacimiento().toISOString().split('T')[0],
-            altura: atleta.getAltura(),
-            sexo: atleta.getSexo(),
-            aniosEntrenamiento: atleta.getAniosEntrenamiento(),
-            peso: atleta.getPeso(),
-            objetivos: atleta.getObjetivos()
-          })
-        }
-
-      }
-      getAtletaExistente(id)
-      setEdited(false)
+    const getAtleta = async () => {
+      if (id != "") {
+        const atleta = (await new DatabaseConnection().getAtleta(parseInt(id)))as Atleta
+      setAtleta(atleta)
+      setData({
+        nombre: atleta.nombre,
+        fechaNacimiento: atleta.fechaNacimiento.toISOString().split('T')[0],
+        altura: atleta.altura,
+        sexo: atleta.sexo,
+        anioComienzoEntrenamiento : atleta.anioComienzoEntrenamiento,
+        peso: atleta.peso,
+        objetivos: atleta.objetivos
+      } )
     }
+  }
+    getAtleta()
 
-  }, [atletaData])
+  }, [])
 
 
 
@@ -53,26 +53,32 @@ export function AtletaForm({ id }: { id: string }) {
 
   };
 
-  const transferirEntrenamientos = (atletaViejo: Atleta, atletaNuevo: Atleta) => {
-    atletaViejo.getEntrenamientos().forEach(e => { atletaNuevo.agregarEntrenamiento(e) })
-    atletaViejo.getCarreras().forEach(e => atletaNuevo.agregarCarrera(e))
-    atletaViejo.getTests().forEach(e => atletaNuevo.agregarTest(e))
-  }
 
-  const crearAtleta = async () => {
-    const db = new DatabaseInterface(Tables.atleta);
-    var atleta: Atleta = new Atleta(atletaData.nombre, new Date(atletaData.fechaNacimiento), atletaData.peso, atletaData.altura, atletaData.sexo, atletaData.aniosEntrenamiento, atletaData.objetivos);
-    if (id !== "") {
-      const atletaViejo = await db.getById(id) as Atleta;
-      transferirEntrenamientos(atletaViejo, atleta)
-      await db.replace(atletaViejo, atleta)
+
+  const crearAtleta =  async () => {
+    if (atleta !== null){
+      atleta.nombre = atletaData.nombre
+      atleta.fechaNacimiento = new Date(atletaData.fechaNacimiento)
+      atleta.altura = atletaData.altura
+      atleta.sexo = atletaData.sexo
+      atleta.anioComienzoEntrenamiento= atletaData.anioComienzoEntrenamiento
+      atleta.peso = atletaData.peso
+      atleta.objetivos = atletaData.objetivos
+      const object = await new DatabaseConnection().saveAtleta(atleta)
+      const id = object.id
+      nav('/atleta/' + id)
+
     } else {
-      await db.add(atleta);
+      const newAtleta = new Atleta(atletaData.nombre,new Date(Date.parse(atletaData.fechaNacimiento)),atletaData.peso,atletaData.altura,atletaData.sexo,atletaData.anioComienzoEntrenamiento,atletaData.objetivos)
+      const object = await new DatabaseConnection().saveAtleta(newAtleta)
+      const id = object.id
+      nav('/atleta/' + id)
     }
+
   };
 
   return (
-    <form onSubmit={crearAtleta}>
+    <form onSubmit={async event => {event.preventDefault();await crearAtleta();}}>
       <h2> Datos Fisicos </h2>
       <label htmlFor="nombre">Nombre</label>
       <input onChange={handleChange} type="text" id="nombre" name="nombre" value={atletaData.nombre}></input>
@@ -96,8 +102,8 @@ export function AtletaForm({ id }: { id: string }) {
       <h2> Sobre Atletismo</h2>
 
 
-      <label htmlFor="aniosEntrenamiento">Años de Entrenamiento</label>
-      <input onChange={handleChange} type="number" min={0} name="aniosEntrenamiento" value={atletaData.aniosEntrenamiento}></input>
+      <label htmlFor="anioComienzoEntrenamiento">Año comienzo de entrenamiento</label>
+      <input onChange={handleChange} type="number" min={1900} name="anioComienzoEntrenamiento" value={atletaData.anioComienzoEntrenamiento}></input>
 
       <label htmlFor="objetivos"> Objetivos </label>
       <input onChange={handleChange} type="text" name="objetivos" value={atletaData.objetivos}></input>
